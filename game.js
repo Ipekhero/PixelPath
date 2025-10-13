@@ -195,60 +195,128 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Draws the player character
     function drawPlayer(isoX, isoY) {
-         // Player shadow
+         // Player shadow (larger for full body)
         ctx.fillStyle = player.shadowColor;
         ctx.beginPath();
-        ctx.ellipse(isoX, isoY + TILE_HEIGHT, player.width * 0.6, player.width * 0.3, 0, 0, Math.PI * 2);
+        ctx.ellipse(isoX, isoY + TILE_HEIGHT + 8, player.width * 0.8, player.width * 0.4, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Player body
         const playerTopY = isoY - player.height + TILE_HEIGHT;
-        ctx.fillStyle = player.color;
+
+        // Draw legs first (behind body)
+        const legHeight = 12;
+        const legWidth = 6;
+
+        // Left leg
+        ctx.fillStyle = '#0066cc'; // Blue overalls
+        ctx.fillRect(isoX - 6, playerTopY + player.height, legWidth, legHeight);
+
+        // Right leg
+        ctx.fillRect(isoX + 2, playerTopY + player.height, legWidth, legHeight);
+
+        // Feet (shoes)
+        ctx.fillStyle = '#8B4513'; // Brown shoes
+        ctx.fillRect(isoX - 7, playerTopY + player.height + legHeight, legWidth + 2, 4);
+        ctx.fillRect(isoX + 1, playerTopY + player.height + legHeight, legWidth + 2, 4);
+
+        // Main body (overalls)
+        ctx.fillStyle = player.color; // Red shirt
         ctx.fillRect(isoX - player.width / 2, playerTopY, player.width, player.height);
 
-        // Draw voluminous hair
+        // Overall straps
+        ctx.fillStyle = '#0066cc'; // Blue overalls
+        ctx.fillRect(isoX - player.width / 2 + 2, playerTopY, 4, player.height);
+        ctx.fillRect(isoX + player.width / 2 - 6, playerTopY, 4, player.height);
+
+        // Arms
+        const armHeight = 16;
+        const armWidth = 5;
+
+        // Left arm
+        ctx.fillStyle = player.color; // Red shirt
+        ctx.fillRect(isoX - player.width / 2 - armWidth - 2, playerTopY + 6, armWidth, armHeight);
+
+        // Right arm
+        ctx.fillRect(isoX + player.width / 2 + 2, playerTopY + 6, armWidth, armHeight);
+
+        // Hands
+        ctx.fillStyle = '#FFDBAC'; // Skin color
+        ctx.fillRect(isoX - player.width / 2 - armWidth - 2, playerTopY + armHeight + 4, armWidth + 1, 6);
+        ctx.fillRect(isoX + player.width / 2 + 2, playerTopY + armHeight + 4, armWidth + 1, 6);
+
+        // Draw voluminous hair (Mario-style)
         const hairColor = '#8B4513'; // Brown hair color
-        const hairTopY = playerTopY - 12; // Hair starts above the head
+        const hairTopY = playerTopY - 10;
 
         // Main hair mass (top of head)
         ctx.fillStyle = hairColor;
         ctx.beginPath();
-        ctx.ellipse(isoX, hairTopY + 2, player.width * 0.8, player.width * 0.6, 0, 0, Math.PI * 2);
+        ctx.ellipse(isoX, hairTopY + 2, player.width * 0.9, player.width * 0.7, 0, 0, Math.PI * 2);
         ctx.fill();
 
         // Left side hair
         ctx.beginPath();
-        ctx.ellipse(isoX - 8, hairTopY + 4, player.width * 0.4, player.width * 0.5, 0, 0, Math.PI * 2);
+        ctx.ellipse(isoX - 10, hairTopY + 4, player.width * 0.45, player.width * 0.55, 0, 0, Math.PI * 2);
         ctx.fill();
 
         // Right side hair
         ctx.beginPath();
-        ctx.ellipse(isoX + 8, hairTopY + 4, player.width * 0.4, player.width * 0.5, 0, 0, Math.PI * 2);
+        ctx.ellipse(isoX + 10, hairTopY + 4, player.width * 0.45, player.width * 0.55, 0, 0, Math.PI * 2);
         ctx.fill();
 
         // Back hair (longer strands)
         ctx.beginPath();
-        ctx.ellipse(isoX, hairTopY + 8, player.width * 0.7, player.width * 0.3, 0, 0, Math.PI * 2);
+        ctx.ellipse(isoX, hairTopY + 9, player.width * 0.8, player.width * 0.35, 0, 0, Math.PI * 2);
         ctx.fill();
 
         // Hair texture/highlights
-        ctx.fillStyle = shadeColor(hairColor, 20);
+        ctx.fillStyle = shadeColor(hairColor, 30);
         ctx.beginPath();
-        ctx.ellipse(isoX - 3, hairTopY + 1, player.width * 0.3, player.width * 0.25, 0, 0, Math.PI * 2);
+        ctx.ellipse(isoX - 4, hairTopY + 1, player.width * 0.35, player.width * 0.3, 0, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.beginPath();
-        ctx.ellipse(isoX + 4, hairTopY + 2, player.width * 0.25, player.width * 0.2, 0, 0, Math.PI * 2);
+        ctx.ellipse(isoX + 5, hairTopY + 2, player.width * 0.3, player.width * 0.25, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Simple face (moved down slightly to account for hair)
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(isoX - 4, playerTopY + 8, 3, 3);
-        ctx.fillRect(isoX + 1, playerTopY + 8, 3, 3);
+        // Mario-style face
+        ctx.fillStyle = '#FFDBAC'; // Skin color
+        ctx.fillRect(isoX - 6, playerTopY + 4, 12, 14);
 
-        // Simple mouth
+        // Eyes
         ctx.fillStyle = '#000';
-        ctx.fillRect(isoX - 2, playerTopY + 12, 4, 1);
+        ctx.fillRect(isoX - 4, playerTopY + 6, 3, 3);
+        ctx.fillRect(isoX + 1, playerTopY + 6, 3, 3);
+
+        // Eye whites
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(isoX - 3, playerTopY + 7, 1, 1);
+        ctx.fillRect(isoX + 2, playerTopY + 7, 1, 1);
+
+        // Mario mustache
+        ctx.fillStyle = '#000';
+        ctx.fillRect(isoX - 4, playerTopY + 10, 8, 2);
+
+        // Nose
+        ctx.fillStyle = '#FFDBAC';
+        ctx.fillRect(isoX - 1, playerTopY + 8, 2, 3);
+
+        // Mouth
+        ctx.fillStyle = '#000';
+        ctx.fillRect(isoX - 2, playerTopY + 13, 4, 1);
+
+        // Hat (Mario's iconic cap)
+        ctx.fillStyle = '#ff0000'; // Red hat
+        ctx.fillRect(isoX - 10, hairTopY - 2, 20, 6);
+
+        // Hat brim
+        ctx.fillRect(isoX - 12, hairTopY + 4, 24, 2);
+
+        // Hat logo (M)
+        ctx.fillStyle = '#fff';
+        ctx.font = "8px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText("M", isoX, hairTopY + 2);
     }
 
     // Utility to darken/lighten a color
@@ -451,15 +519,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    // --- Zoom Controls ---
+    function zoomIn() {
+        zoom = Math.min(zoom + 0.2, 3.0); // Max zoom 3.0x
+    }
+
+    function zoomOut() {
+        zoom = Math.max(zoom - 0.2, 0.5); // Min zoom 0.5x
+    }
+
     // --- Initialization ---
     function init() {
         // Set initial canvas size
         resizeCanvas();
-        
+
         // Add listeners
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('resize', resizeCanvas); // Resize canvas when window size changes
 
+        // Add zoom control listeners
+        document.getElementById('zoomIn').addEventListener('click', zoomIn);
+        document.getElementById('zoomOut').addEventListener('click', zoomOut);
 
         // Start the game loop
         render();
