@@ -205,11 +205,50 @@ document.addEventListener('DOMContentLoaded', () => {
         const playerTopY = isoY - player.height + TILE_HEIGHT;
         ctx.fillStyle = player.color;
         ctx.fillRect(isoX - player.width / 2, playerTopY, player.width, player.height);
-        
-        // Simple face
+
+        // Draw voluminous hair
+        const hairColor = '#8B4513'; // Brown hair color
+        const hairTopY = playerTopY - 12; // Hair starts above the head
+
+        // Main hair mass (top of head)
+        ctx.fillStyle = hairColor;
+        ctx.beginPath();
+        ctx.ellipse(isoX, hairTopY + 2, player.width * 0.8, player.width * 0.6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Left side hair
+        ctx.beginPath();
+        ctx.ellipse(isoX - 8, hairTopY + 4, player.width * 0.4, player.width * 0.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Right side hair
+        ctx.beginPath();
+        ctx.ellipse(isoX + 8, hairTopY + 4, player.width * 0.4, player.width * 0.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Back hair (longer strands)
+        ctx.beginPath();
+        ctx.ellipse(isoX, hairTopY + 8, player.width * 0.7, player.width * 0.3, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Hair texture/highlights
+        ctx.fillStyle = shadeColor(hairColor, 20);
+        ctx.beginPath();
+        ctx.ellipse(isoX - 3, hairTopY + 1, player.width * 0.3, player.width * 0.25, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.ellipse(isoX + 4, hairTopY + 2, player.width * 0.25, player.width * 0.2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Simple face (moved down slightly to account for hair)
         ctx.fillStyle = '#fff';
-        ctx.fillRect(isoX - 4, playerTopY + 6, 3, 3);
-        ctx.fillRect(isoX + 1, playerTopY + 6, 3, 3);
+        ctx.fillRect(isoX - 4, playerTopY + 8, 3, 3);
+        ctx.fillRect(isoX + 1, playerTopY + 8, 3, 3);
+
+        // Simple mouth
+        ctx.fillStyle = '#000';
+        ctx.fillRect(isoX - 2, playerTopY + 12, 4, 1);
     }
 
     // Utility to darken/lighten a color
