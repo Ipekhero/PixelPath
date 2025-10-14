@@ -11,7 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let messageVisible = false;
 
     // --- Map Data ---
-    // 0: Grass, 1: Path, 2: Water, 3: Tree, 4: Flowers, 5: Hut, 6: Sign
+    // Tile legend:
+    // 0: Grass, 1: Path, 2: Water, 3: Tree, 4: Flowers, 5: Hut, 6: Sign,
+    // 7: Crops, 8: Industry, 9: Circus
     const map = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 3, 3, 3, 3, 3, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 3, 3, 3, 3, 3, 0, 0, 0, 0],
@@ -45,6 +47,88 @@ document.addEventListener('DOMContentLoaded', () => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
 
+    // --- Overlay: central path and city ---
+    // Adds a vertical and horizontal path crossing the map center and a 5x5 city block.
+    // interactive objects list (will be filled by overlay)
+    const interactives = [];
+
+    (function addCentralPathAndCity() {
+        const rows = map.length;
+        const cols = map[0].length;
+        const centerX = Math.floor(cols / 2); // central column
+        const centerY = Math.floor(rows / 2); // central row
+
+        // Vertical path down the center
+        for (let y = 0; y < rows; y++) {
+            map[y][centerX] = 1;
+        }
+
+        // Horizontal path across the center
+        for (let x = 0; x < cols; x++) {
+            map[centerY][x] = 1;
+        }
+
+        // City layout parameters
+        const cityRadius = 2; // creates a 5x5 block
+        const cityMinX = centerX - cityRadius;
+        const cityMaxX = centerX + cityRadius;
+        const cityMinY = centerY - cityRadius;
+        const cityMaxY = centerY + cityRadius;
+
+        // Carve inner roads inside the 5x5 city: a plus-shaped street
+        for (let x = cityMinX; x <= cityMaxX; x++) {
+            if (x >= 0 && x < cols) {
+                map[centerY][x] = 1; // central horizontal within city
+            }
+        }
+        for (let y = cityMinY; y <= cityMaxY; y++) {
+            if (y >= 0 && y < rows) {
+                map[y][centerX] = 1; // central vertical within city
+            }
+        }
+
+        // Place buildings in the four corners of the 5x5 block and small plazas
+        const buildingCoords = [
+            {x: cityMinX, y: cityMinY},
+            {x: cityMaxX, y: cityMinY},
+            {x: cityMinX, y: cityMaxY},
+            {x: cityMaxX, y: cityMaxY}
+        ];
+
+        for (const b of buildingCoords) {
+            if (b.y >= 0 && b.y < rows && b.x >= 0 && b.x < cols) {
+                map[b.y][b.x] = 5; // building
+            }
+        }
+
+        // Fill remaining city tiles with paved squares (to represent plaza or pavement)
+        for (let y = cityMinY; y <= cityMaxY; y++) {
+            for (let x = cityMinX; x <= cityMaxX; x++) {
+                if (y >= 0 && y < rows && x >= 0 && x < cols) {
+                    // skip if a building or road already
+                    if (map[y][x] !== 1 && map[y][x] !== 5) {
+                        map[y][x] = 1; // paved plaza
+                    }
+                }
+            }
+        }
+
+        // Add a few interactive red-square objects inside the city (e.g., shop, info, fountain)
+        const interactivePositions = [
+            {x: centerX - 1, y: centerY - 1, msg: "Town Hall: Open 9-5."},
+            {x: centerX + 1, y: centerY - 1, msg: "Bakery: Fresh bread inside."},
+            {x: centerX - 1, y: centerY + 1, msg: "Fountain: Throw a coin."},
+            {x: centerX + 1, y: centerY + 1, msg: "Notice Board: Events posted here."}
+        ];
+
+        for (const ip of interactivePositions) {
+            if (ip.y >= 0 && ip.y < rows && ip.x >= 0 && ip.x < cols) {
+                // record interactive; we leave underlying tile as-is (paved)
+                interactives.push({x: ip.x, y: ip.y, message: ip.msg});
+            }
+        }
+    })();
+
     const MAP_ROWS = map.length;
     const MAP_COLS = map[0].length;
 
@@ -63,6 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
         5: "A cozy-looking hut. The door is locked.",
         6: "The sign reads: 'Welcome to Pixel Valley!'"
     };
+
+    // Messages for new tile types
+    messages[7] = "Fields of crops sway in the breeze.";
+    messages[8] = "Industrial area: factories hum with activity.";
+    messages[9] = "Circus: bright tents and lively music can be heard.";
 
     // --- Camera ---
     const camera = {
@@ -189,6 +278,91 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.lineTo(x + width, topY);
         ctx.lineTo(x, topY + height / 2);
         ctx.lineTo(x - width, topY);
+        ctx.closePath();
+        ctx.fill();
+    }
+    
+    // Draws a crop field (rows of crops)
+    function drawCrops(x, y) {
+        const rows = 4;
+        const spacing = 6;
+        // Slight shadow under the crop patch
+        ctx.fillStyle = 'rgba(0,0,0,0.12)';
+        ctx.beginPath();
+        ctx.ellipse(x, y + TILE_HEIGHT, 30, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw several crop rows as green strips
+        for (let i = -rows; i <= rows; i++) {
+            ctx.fillStyle = shadeColor('#4CAF50', (i % 2 === 0) ? 10 : -5);
+            ctx.fillRect(x - 22, y - 8 + i * spacing, 44, 4);
+        }
+        // Add small yellow highlights to suggest ripe crops
+        ctx.fillStyle = '#FFD54F';
+        ctx.fillRect(x - 6, y - 6, 4, 3);
+        ctx.fillRect(x + 2, y - 2, 4, 3);
+    }
+
+    // Draws a small factory/industry building
+    function drawFactory(x, y) {
+        // foundation shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.18)';
+        ctx.beginPath();
+        ctx.ellipse(x, y + TILE_HEIGHT, 36, 12, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // main building body
+        ctx.fillStyle = '#9e9e9e';
+        ctx.fillRect(x - 28, y - 38, 56, 28);
+
+        // roof and detail
+        ctx.fillStyle = '#707070';
+        ctx.fillRect(x - 28, y - 44, 56, 6);
+
+        // smoke stack
+        ctx.fillStyle = '#5d5d5d';
+        ctx.fillRect(x + 12, y - 60, 8, 24);
+        // smoke
+        ctx.fillStyle = 'rgba(120,120,120,0.5)';
+        ctx.beginPath();
+        ctx.ellipse(x + 18, y - 68, 10, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Draws a circus tent
+    function drawCircus(x, y) {
+        // shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.18)';
+        ctx.beginPath();
+        ctx.ellipse(x, y + TILE_HEIGHT, 34, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // tent base (circle-ish)
+        ctx.fillStyle = '#F06292';
+        ctx.beginPath();
+        ctx.moveTo(x, y - 36);
+        ctx.lineTo(x + 26, y - 6);
+        ctx.lineTo(x - 26, y - 6);
+        ctx.closePath();
+        ctx.fill();
+
+        // tent stripes
+        ctx.fillStyle = '#FFF176';
+        ctx.beginPath();
+        ctx.moveTo(x, y - 36);
+        ctx.lineTo(x + 12, y - 6);
+        ctx.lineTo(x + 6, y - 6);
+        ctx.closePath();
+        ctx.fill();
+
+        // flag pole
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(x - 2, y - 36, 4, 18);
+        ctx.fillStyle = '#ffeb3b';
+        ctx.beginPath();
+        ctx.moveTo(x + 2, y - 36);
+        ctx.lineTo(x + 14, y - 30);
+        ctx.lineTo(x + 2, y - 28);
         ctx.closePath();
         ctx.fill();
     }
@@ -378,6 +552,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     case 2: // Water
                         drawTile(iso.x, iso.y, '#67D4E1');
                         break;
+                    case 7: // Crops
+                        drawTile(iso.x, iso.y, '#7CC576');
+                        break;
+                    case 8: // Industry
+                        drawTile(iso.x, iso.y, '#CFCFCF');
+                        break;
+                    case 9: // Circus
+                        drawTile(iso.x, iso.y, '#F8BBD0');
+                        break;
                     case 3: // Tree placeholder
                     case 4: // Flower placeholder
                     case 5: // Hut placeholder
@@ -399,8 +582,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     objectsToDraw.push({type: 'hut', iso});
                 } else if (tileType === 6) {
                     objectsToDraw.push({type: 'sign', iso});
+                } else if (tileType === 7) {
+                    objectsToDraw.push({type: 'crops', iso});
+                } else if (tileType === 8) {
+                    objectsToDraw.push({type: 'factory', iso});
+                } else if (tileType === 9) {
+                    objectsToDraw.push({type: 'circus', iso});
                 }
             }
+        }
+
+        // Add interactive objects (red squares) to draw queue
+        for (const it of interactives) {
+            const iso = toIsometric(it.x, it.y);
+            objectsToDraw.push({type: 'interactive', iso, meta: it});
         }
         
         // --- Draw Objects and Player (sorted by Y for correct overlap) ---
@@ -422,6 +617,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 case 'sign':
                     drawSign(obj.iso.x, obj.iso.y);
+                    break;
+                case 'interactive':
+                    // draw a small red square to represent the interactive object
+                    ctx.save();
+                    ctx.translate(obj.iso.x, obj.iso.y - 8); // slightly above ground
+                    ctx.fillStyle = '#ff4500';
+                    ctx.fillRect(-6, -6, 12, 12);
+                    ctx.restore();
                     break;
             }
         });
@@ -458,6 +661,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         for (const coord of checkCoords) {
             if (coord.x >= 0 && coord.x < MAP_COLS && coord.y >= 0 && coord.y < MAP_ROWS) {
+                // First check interactives at this coordinate
+                const foundInteractive = interactives.find(it => Math.floor(it.x) === Math.floor(coord.x) && Math.floor(it.y) === Math.floor(coord.y));
+                if (foundInteractive) {
+                    showMessage(foundInteractive.message);
+                    return;
+                }
+
+                // Fallback to tile-based messages
                 const tileType = map[Math.floor(coord.y)][Math.floor(coord.x)];
                 if (messages[tileType]) {
                     showMessage(messages[tileType]);
