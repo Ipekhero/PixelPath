@@ -26,37 +26,37 @@ document.addEventListener('DOMContentLoaded', () => {
     [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
     [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
     [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,6,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,7,7,7,7,7,7,1,1,1,1,7,7,7,7,7,7,7,7,7,7,7],
     // row15 -> start of centered small map
-    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,8,8,8,8,8,8,0,0,0,0,0,0,9,9,9,9,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,8,8,8,8,8,0,0,0,1,1,1,0,9,9,9,9,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,8,3,3,3,3,0,0,0,1,0,0,0,0,5,5,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,8,3,4,3,3,0,0,0,1,0,3,3,3,5,5,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,8,3,3,4,3,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,4,1,4,1,1,1,1,1,0,0,0,0,7,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,5,5,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,5,1,5,1,1,5,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,5,1,1,5,1,1,5,5,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,7,7,7,7,7,1,1,1,1,1,1,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,7,7,7,7,7,1,6,1,1,6,1,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,5,1,5,1,5,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,4,0,0,0,0,0,0,1,3,3,3,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,5,1,5,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,4,1,4,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
     // rows 31..44: continue centered smallMap rows
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,3,0,0,3,0,0,0,0,0,0,0],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,3,0,0,0,3,0,0,0,0],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,3,0,0,3,0,0,0,0,0,0,0],
+    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,3,0,0,0,3,0,0,0,0],
+    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [8,8,8,8,8,8,8,8,6,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     // rows 45..59 bottom padding (all zeros)
     [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
     [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
@@ -146,14 +146,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const MAP_ROWS = map.length;
     const MAP_COLS = map[0].length;
+    let heightMap;
+    let waterBodyMap;
+    let largestWaterBodyId = -1;
 
     // --- Player ---
     const player = {
-        x: 15, // map x
-        y: 20, // map y
+        x: Math.floor(MAP_COLS / 2), // map x
+        y: Math.floor(MAP_ROWS / 2), // map y
         width: 16,
-        height: 24,
-        color: '#ff6347', // Tomato color
+        height: 24, // Not used directly for player drawing anymore, but kept for reference
+        color: '#FF69B4', // Hot Pink
         shadowColor: 'rgba(0,0,0,0.3)'
     };
 
@@ -168,11 +171,128 @@ document.addEventListener('DOMContentLoaded', () => {
     messages[8] = "Industrial area: factories hum with activity.";
     messages[9] = "Circus: bright tents and lively music can be heard.";
 
+    // --- Tractor Data ---
+    const tractors = [];
+    const NUM_TRACTORS = 3;
+
     // --- Camera ---
     const camera = {
         x: 0,
         y: 0
     };
+
+    // --- Cloud Data ---
+    const clouds = [];
+    const NUM_CLOUDS = 15;
+
+    function initClouds() {
+        for (let i = 0; i < NUM_CLOUDS; i++) {
+            clouds.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * (canvas.height * 0.4), // Keep clouds in the upper 40% of the sky
+                size: 40 + Math.random() * 50,
+                speed: 0.1 + Math.random() * 0.2
+            });
+        }
+    }
+
+    function initHeightMap() {
+        heightMap = Array(MAP_ROWS).fill(null).map(() => Array(MAP_COLS).fill(0));
+        const hilliness = 0.8; // How much height varies. 0 = flat, 1 = very hilly.
+
+        for (let y = 1; y < MAP_ROWS; y++) {
+            for (let x = 1; x < MAP_COLS; x++) {
+                if (map[y][x] === 0) { // Only generate hills on grass tiles
+                    // Average the height of neighbors and add a random amount
+                    const avgHeight = (heightMap[y-1][x] + heightMap[y][x-1]) / 2;
+                    let randomFactor = (Math.random() - 0.5) * hilliness;
+                    
+                    // Add a chance for a steeper change to create more distinct hills
+                    if (Math.random() < 0.05) {
+                        randomFactor *= 3;
+                    }
+
+                    heightMap[y][x] = Math.max(0, Math.min(2, avgHeight + randomFactor)); // Clamp height between 0 and 2
+                }
+            }
+        }
+    }
+
+    function identifyWaterBodies() {
+        waterBodyMap = Array(MAP_ROWS).fill(null).map(() => Array(MAP_COLS).fill(0));
+        const visited = Array(MAP_ROWS).fill(null).map(() => Array(MAP_COLS).fill(false));
+        let currentBodyId = 1;
+        let largestSize = 0;
+
+        for (let y = 0; y < MAP_ROWS; y++) {
+            for (let x = 0; x < MAP_COLS; x++) {
+                if (map[y][x] === 2 && !visited[y][x]) {
+                    let currentSize = 0;
+                    const queue = [{x, y}];
+                    visited[y][x] = true;
+
+                    while (queue.length > 0) {
+                        const tile = queue.shift();
+                        waterBodyMap[tile.y][tile.x] = currentBodyId;
+                        currentSize++;
+
+                        const neighbors = [
+                            {x: tile.x, y: tile.y - 1}, {x: tile.x, y: tile.y + 1},
+                            {x: tile.x - 1, y: tile.y}, {x: tile.x + 1, y: tile.y}
+                        ];
+
+                        for (const n of neighbors) {
+                            if (n.y >= 0 && n.y < MAP_ROWS && n.x >= 0 && n.x < MAP_COLS && map[n.y][n.x] === 2 && !visited[n.y][n.x]) {
+                                visited[n.y][n.x] = true;
+                                queue.push(n);
+                            }
+                        }
+                    }
+
+                    if (currentSize > largestSize) {
+                        largestSize = currentSize;
+                        largestWaterBodyId = currentBodyId;
+                    }
+                    currentBodyId++;
+                }
+            }
+        }
+    }
+
+    function initTractors() {
+        const cropTiles = [];
+        for (let y = 0; y < MAP_ROWS; y++) {
+            for (let x = 0; x < MAP_COLS; x++) {
+                if (map[y][x] === 7) {
+                    cropTiles.push({ x, y });
+                }
+            }
+        }
+
+        if (cropTiles.length === 0) return;
+
+        for (let i = 0; i < NUM_TRACTORS; i++) {
+            const startTile = cropTiles[Math.floor(Math.random() * cropTiles.length)];
+            const directions = [
+                { dx: -1, dy: -1 }, // Up
+                { dx: 1, dy: 1 },   // Down
+                { dx: -1, dy: 1 },  // Left
+                { dx: 1, dy: -1 }   // Right
+            ];
+            tractors.push({
+                x: startTile.x,
+                y: startTile.y,
+                speed: 0.02 + Math.random() * 0.02,
+                dir: directions[Math.floor(Math.random() * directions.length)],
+                color: '#e65100' // Bright orange
+            });
+        }
+    }
+
+    function findNewTractorDirection(tractor) {
+        const directions = [{ dx: -1, dy: -1 }, { dx: 1, dy: 1 }, { dx: -1, dy: 1 }, { dx: 1, dy: -1 }];
+        tractor.dir = directions[Math.floor(Math.random() * directions.length)];
+    }
 
     // --- Utility Functions ---
 
@@ -243,10 +363,59 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.restore();
     }
 
+    // Draws an animated water tile
+    function drawWater(isoX, isoY, mapX, mapY) {
+        // Base water color
+        const baseColor = '#40E0D0'; // Turquoise
+        drawTile(isoX, isoY, baseColor);
+
+        // Add animated "sparkles" or "bubbles" for a more gamelike feel
+        ctx.save();
+        ctx.translate(isoX, isoY);
+
+        const time = Date.now();
+        // Use a time-based seed that is unique for each tile to vary the animation
+        const tileSeed = mapX * 13 + mapY * 31;
+        const numBubbles = 3;
+
+        for (let i = 0; i < numBubbles; i++) {
+            // Use a sine wave to make bubbles fade in and out.
+            // The animation is staggered for each bubble and tile.
+            const anim = Math.sin(time / 600 + tileSeed + i * 2.1);
+
+            if (anim > 0.3) { // Only draw the bubble when it's "active"
+                // Deterministic, but pseudo-random, position within the tile's top face
+                const bubbleX = (((tileSeed + i * 5) % 100) / 100 - 0.5) * TILE_WIDTH * 0.7;
+                const bubbleY = ((((tileSeed + i * 17) % 100) / 100 - 0.5) * TILE_HEIGHT * 0.7) + TILE_HEIGHT / 2;
+
+                // Opacity is based on the animation cycle
+                ctx.fillStyle = `rgba(255, 255, 255, ${anim * 0.7})`;
+                ctx.beginPath();
+                ctx.arc(bubbleX, bubbleY, 1.5, 0, Math.PI * 2); // Small white circle
+                ctx.fill();
+            }
+        }
+        ctx.restore();
+    }
+
+    // Draws a single fluffy cloud
+    function drawCloud(x, y, size) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'; // Semi-transparent white
+        ctx.beginPath();
+        // A cloud is composed of several overlapping ellipses
+        ctx.ellipse(x, y, size, size * 0.6, 0, 0, Math.PI * 2);
+        ctx.ellipse(x + size * 0.6, y, size * 0.8, size * 0.4, 0, 0, Math.PI * 2);
+        ctx.ellipse(x - size * 0.5, y, size * 0.7, size * 0.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+
+
+
     // Draws a hut
     function drawHut(x, y) {
-        const wallColor = '#a87550';
-        const roofColor = '#d46a6a';
+        const wallColor = '#F0E68C'; // Khaki (like a sugar wafer)
+        const roofColor = '#FFB6C1'; // Light Pink (frosting)
         const height = 40;
         const width = 25;
         const topY = y - height;
@@ -274,22 +443,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Draws a sign
     function drawSign(x, y) {
          // Shadow
+        const boardWidth = 40;
+        const boardHeight = 20;
         ctx.fillStyle = 'rgba(0,0,0,0.2)';
         ctx.beginPath();
-        ctx.ellipse(x, y + TILE_HEIGHT, 15, 8, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, y + TILE_HEIGHT, boardWidth / 2, 8, 0, 0, Math.PI * 2);
         ctx.fill();
         
         // Post
-        ctx.fillStyle = '#6b432a';
-        ctx.fillRect(x - 2, y - 20, 4, 20 + TILE_HEIGHT);
+        ctx.fillStyle = '#C71585'; // MediumVioletRed
+        ctx.fillRect(x - 3, y - 25, 6, 25 + TILE_HEIGHT);
 
         // Board
-        ctx.fillStyle = '#a87550';
-        ctx.fillRect(x-15, y - 22, 30, 15);
+        ctx.fillStyle = '#FF69B4'; // HotPink
+        ctx.fillRect(x - boardWidth / 2, y - 30, boardWidth, boardHeight);
         ctx.fillStyle = '#fff';
-        ctx.font = "8px monospace";
+        ctx.font = "12px monospace";
         ctx.textAlign = "center";
-        ctx.fillText("?", x, y - 13);
+        ctx.fillText("?", x, y - 18);
     }
 
     // Draws scenery objects like trees or flowers
@@ -317,369 +488,252 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fill();
     }
     
-    // Draws a rich agricultural crop field with furrows, diverse crops, and detailed farm equipment
-    function drawCrops(x, y) {
+    // Draws a more detailed and realistic tree
+    function drawTree(x, y) {
+        const height = 60;
+        const width = 35;
+        const topY = y - height;
+        const trunkColor = '#8B4513'; // SaddleBrown
+        const leafColors = ['#2E7D32', '#388E3C', '#4CAF50']; // Dark, medium, and light green
+
+        // Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        ctx.beginPath();
+        ctx.ellipse(x, y + TILE_HEIGHT, width * 0.8, width * 0.4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Trunk
+        ctx.fillStyle = trunkColor;
+        // A slightly tapered trunk for more realism
+        ctx.beginPath();
+        ctx.moveTo(x - 4, y + TILE_HEIGHT);
+        ctx.lineTo(x + 4, y + TILE_HEIGHT);
+        ctx.lineTo(x + 2, y - 10);
+        ctx.lineTo(x - 2, y - 10);
+        ctx.closePath();
+        ctx.fill();
+
+        // Leafy part - composed of several overlapping, semi-transparent ellipses
+        // Base layer (darkest)
+        ctx.fillStyle = 'rgba(46, 125, 50, 0.8)'; // leafColors[0] with alpha
+        ctx.beginPath();
+        ctx.ellipse(x, topY + 20, width, height * 0.4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Mid and top layers for volume and highlights
+        ctx.fillStyle = 'rgba(76, 175, 80, 0.85)'; // leafColors[2] with alpha
+        ctx.beginPath();
+        ctx.ellipse(x + 10, topY + 15, width * 0.7, height * 0.3, 0, 0, Math.PI * 2);
+        ctx.ellipse(x - 10, topY + 25, width * 0.8, height * 0.35, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, topY + 5, width * 0.6, height * 0.25, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Draws a bridge tile over water
+    function drawBridge(x, y, mapX, mapY) {
+        // First, draw the water underneath
+        drawWater(x, y, mapX, mapY);
+
         ctx.save();
         ctx.translate(x, y);
 
-        // Enhanced shadow with more realistic depth
-        ctx.fillStyle = 'rgba(0,0,0,0.15)';
-        ctx.beginPath();
-        ctx.ellipse(0, TILE_HEIGHT, 42, 16, 0, 0, Math.PI * 2);
-        ctx.fill();
+        const plankColor = '#A0522D'; // Sienna
+        const postColor = '#8B4513'; // SaddleBrown
+        const plankWidth = TILE_WIDTH / 4;
+        const bridgeElevation = -TILE_HEIGHT / 2; // Raise the bridge surface
 
-        // Field base with textured tilled soil appearance
-        const fieldW = 52;
-        const fieldH = 26;
-        ctx.fillStyle = '#6d3f1f'; // Base soil color
-        ctx.beginPath();
-        ctx.rect(-fieldW / 2, -14, fieldW, fieldH);
-        ctx.fill();
-
-        // Add soil texture with subtle horizontal lines
-        ctx.strokeStyle = '#5a3317';
-        ctx.lineWidth = 0.8;
-        for (let i = -12; i <= 12; i += 2) {
+        // Draw wooden planks
+        for (let i = 0; i < 4; i++) {
+            const px = -TILE_WIDTH / 2 + i * plankWidth;
+            ctx.fillStyle = shadeColor(plankColor, (i % 2) * 10); // Alternate plank colors slightly
             ctx.beginPath();
-            ctx.moveTo(-fieldW / 2, i);
-            ctx.lineTo(fieldW / 2, i);
-            ctx.stroke();
+            ctx.moveTo(px, bridgeElevation + TILE_HEIGHT / 2);
+            ctx.lineTo(px + plankWidth, bridgeElevation + TILE_HEIGHT / 2);
+            ctx.lineTo(px + plankWidth - TILE_HEIGHT / 2, bridgeElevation + TILE_HEIGHT);
+            ctx.lineTo(px - TILE_HEIGHT / 2, bridgeElevation + TILE_HEIGHT);
+            ctx.closePath();
+            ctx.fill();
         }
 
-        // Multiple furrow rows with realistic curved plowing patterns
-        for (let i = -3; i <= 3; i++) {
-            const yy = -10 + i * 4.5;
-            ctx.beginPath();
-            ctx.lineWidth = 2.5;
-            ctx.strokeStyle = (i % 2 === 0) ? '#5d2e0a' : '#7d4f1f';
+        // Draw bridge posts/railings on the sides
+        ctx.fillStyle = postColor;
+        const postSize = 6;
+        // Left post
+        ctx.fillRect(
+            -TILE_WIDTH / 2 - postSize / 2, 
+            bridgeElevation - postSize, 
+            postSize, 
+            postSize * 2.5
+        );
+        // Right post
+        ctx.fillRect(
+            TILE_WIDTH / 2 - postSize / 2, 
+            bridgeElevation - postSize, 
+            postSize, 
+            postSize * 2.5
+        );
+        ctx.restore();
+    }
 
-            // Create more realistic S-curved furrows
-            const segments = 8;
-            const segmentWidth = fieldW / segments;
-            ctx.moveTo(-fieldW / 2, yy);
+    // Draws a rich agricultural crop field with furrows and diverse crops
+function drawCrops(x, y) {
+    ctx.save();
+    ctx.translate(x, y);
 
-            for (let s = 0; s < segments; s++) {
-                const sx = -fieldW / 2 + s * segmentWidth;
-                const nextX = -fieldW / 2 + (s + 1) * segmentWidth;
-                const controlOffset = (Math.sin(s * 0.5) * 3) + ((i % 2 === 0) ? 4 : -3);
-                ctx.quadraticCurveTo(sx + segmentWidth / 2, yy + controlOffset, nextX, yy);
-            }
-            ctx.stroke();
-        }
+    // Field base with textured tilled soil appearance
+    const fieldW = TILE_WIDTH * 0.9;
+    const fieldH = TILE_HEIGHT * 0.9;
+    ctx.fillStyle = '#DEB887'; // BurlyWood (like cookie dough)
 
-        // Diverse crop rows with varying plant types and growth stages
-        const cropRows = [
-            { y: -12, type: 'corn', color: '#2d5016', height: 8, width: 4 },
-            { y: -6, type: 'wheat', color: '#4a7c2a', height: 6, width: 3 },
-            { y: 0, type: 'mixed', color: '#1f3f0f', height: 7, width: 3.5 },
-            { y: 6, type: 'vegetables', color: '#3e6b1e', height: 5, width: 2.5 }
-        ];
+    // Draw the base shape of the field
+    ctx.beginPath();
+    ctx.moveTo(0, -fieldH / 2);
+    ctx.lineTo(fieldW / 2, 0);
+    ctx.lineTo(0, fieldH / 2);
+    ctx.lineTo(-fieldW / 2, 0);
+    ctx.closePath();
+    ctx.fill();
 
-        cropRows.forEach(row => {
-            ctx.fillStyle = row.color;
-            for (let px = -fieldW / 2 + 8; px <= fieldW / 2 - 8; px += 12) {
-                // Vary plant heights for more natural appearance
-                const plantHeight = row.height + (Math.sin(px * 0.3) * 2);
-                const plantWidth = row.width + (Math.cos(px * 0.2) * 1);
+    // Draw furrows (lines in the soil)
+    ctx.strokeStyle = '#CD853F'; // Peru (darker cookie)
+    ctx.lineWidth = 1.5;
+    for (let i = -3; i <= 3; i++) {
+        const startX = -fieldW / 2 + Math.abs(i * 4);
+        const endX = fieldW / 2 - Math.abs(i * 4);
+        const yOffset = i * (fieldH / 7);
 
-                // Main plant stem/body
-                ctx.beginPath();
-                ctx.moveTo(px, row.y);
-                ctx.lineTo(px - plantWidth, row.y + plantHeight);
-                ctx.lineTo(px + plantWidth, row.y + plantHeight);
-                ctx.closePath();
-                ctx.fill();
-
-                // Add leaves or grain heads based on crop type
-                if (row.type === 'corn') {
-                    // Corn husks
-                    ctx.fillStyle = '#4a7c2a';
-                    ctx.fillRect(px - 1, row.y + 2, 2, 4);
-                    ctx.fillRect(px - 2, row.y + 1, 4, 2);
-                } else if (row.type === 'wheat') {
-                    // Wheat grain heads
-                    ctx.fillStyle = '#d4b896';
-                    ctx.beginPath();
-                    ctx.ellipse(px, row.y - 2, 2, 4, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                } else {
-                    // Mixed vegetables - occasional flowers
-                    if (Math.random() > 0.7) {
-                        ctx.fillStyle = '#ff6b35';
-                        ctx.beginPath();
-                        ctx.ellipse(px, row.y - 1, 1.5, 1.5, 0, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-                }
-
-                ctx.fillStyle = row.color; // Reset color
-            }
-        });
-
-        // Advanced irrigation system with sprinklers
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#1976d2';
-        ctx.fillStyle = '#42a5f5';
-
-        // Main irrigation pipes
-        for (let i = -2; i <= 2; i++) {
-            const iy = -8 + i * 6;
-            ctx.beginPath();
-            ctx.moveTo(-fieldW / 2 + 4, iy);
-            ctx.lineTo(fieldW / 2 - 4, iy);
-            ctx.stroke();
-
-            // Add sprinkler heads
-            if (i % 2 === 0) {
-                ctx.beginPath();
-                ctx.ellipse(-fieldW / 2 + 8, iy, 3, 3, 0, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.ellipse(fieldW / 2 - 8, iy, 3, 3, 0, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
-            }
-        }
-
-        // Enhanced detailed tractor with more realistic features
-        const tx = -fieldW / 2 + 12;
-        const ty = 8;
-
-        // Tractor shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.2)';
         ctx.beginPath();
-        ctx.ellipse(tx + 5, ty + 8, 18, 6, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Main tractor body
-        ctx.fillStyle = '#e65100';
-        ctx.fillRect(tx, ty - 8, 16, 8);
-
-        // Tractor cabin with windows
-        ctx.fillStyle = '#bf360c';
-        ctx.fillRect(tx + 6, ty - 14, 8, 7);
-
-        // Cabin windows
-        ctx.fillStyle = '#81c784';
-        ctx.fillRect(tx + 7, ty - 12, 3, 3);
-        ctx.fillRect(tx + 11, ty - 12, 3, 3);
-
-        // Tractor exhaust pipe
-        ctx.fillStyle = '#424242';
-        ctx.fillRect(tx + 14, ty - 10, 2, 6);
-
-        // Smoke from exhaust
-        ctx.fillStyle = 'rgba(100,100,100,0.4)';
-        ctx.beginPath();
-        ctx.ellipse(tx + 16, ty - 12, 4, 2, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Large rear wheels with treads
-        ctx.fillStyle = '#212121';
-        ctx.beginPath();
-        ctx.ellipse(tx + 3, ty + 1, 4, 4, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Wheel treads
-        ctx.strokeStyle = '#424242';
-        ctx.lineWidth = 1;
-        for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
-            const treadX = tx + 3 + Math.cos(angle) * 3;
-            const treadY = ty + 1 + Math.sin(angle) * 3;
-            ctx.beginPath();
-            ctx.moveTo(treadX, treadY);
-            ctx.lineTo(treadX + Math.cos(angle) * 2, treadY + Math.sin(angle) * 2);
-            ctx.stroke();
-        }
-
-        // Front wheels
-        ctx.beginPath();
-        ctx.ellipse(tx + 12, ty + 1, 3, 3, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Tractor attachment (plow or harrow)
-        ctx.fillStyle = '#616161';
-        ctx.fillRect(tx - 4, ty - 2, 8, 4);
-
-        // Plow tines
-        ctx.strokeStyle = '#212121';
-        ctx.lineWidth = 2;
-        for (let tine = 0; tine < 3; tine++) {
-            ctx.beginPath();
-            ctx.moveTo(tx + tine * 2, ty - 2);
-            ctx.lineTo(tx + tine * 2, ty + 6);
-            ctx.stroke();
-        }
-
-        // Farm worker figure near tractor
-        const wx = tx + 20;
-        const wy = ty - 4;
-
-        // Worker body
-        ctx.fillStyle = '#1976d2';
-        ctx.fillRect(wx, wy, 4, 8);
-
-        // Worker head
-        ctx.fillStyle = '#ffdbac';
-        ctx.beginPath();
-        ctx.ellipse(wx + 2, wy - 2, 3, 3, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Worker hat
-        ctx.fillStyle = '#d32f2f';
-        ctx.fillRect(wx - 1, wy - 4, 6, 2);
-
-        // Enhanced barn with more detail
-        const bx = fieldW / 2 + 15;
-        const by = 2;
-
-        // Barn shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.15)';
-        ctx.beginPath();
-        ctx.ellipse(bx + 6, by + 12, 20, 8, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Barn foundation
-        ctx.fillStyle = '#5d4037';
-        ctx.fillRect(bx, by - 12, 18, 12);
-
-        // Barn walls with texture
-        ctx.fillStyle = '#8d6e63';
-        ctx.fillRect(bx + 2, by - 10, 14, 8);
-
-        // Barn roof
-        ctx.fillStyle = '#6d4c41';
-        ctx.beginPath();
-        ctx.moveTo(bx - 2, by - 10);
-        ctx.lineTo(bx + 9, by - 20);
-        ctx.lineTo(bx + 20, by - 10);
-        ctx.closePath();
-        ctx.fill();
-
-        // Roof shingles texture
-        ctx.strokeStyle = '#5d4037';
-        ctx.lineWidth = 1;
-        for (let shingle = 0; shingle < 4; shingle++) {
-            ctx.beginPath();
-            ctx.moveTo(bx + shingle * 4, by - 10);
-            ctx.lineTo(bx + 2 + shingle * 4, by - 18);
-            ctx.lineTo(bx + 4 + shingle * 4, by - 10);
-            ctx.stroke();
-        }
-
-        // Barn door
-        ctx.fillStyle = '#3e2723';
-        ctx.fillRect(bx + 6, by - 5, 6, 7);
-
-        // Door handle
-        ctx.fillStyle = '#ffc107';
-        ctx.beginPath();
-        ctx.ellipse(bx + 10, by - 2, 1, 1, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Silo next to barn
-        const sx = bx + 22;
-        const sy = by - 6;
-
-        ctx.fillStyle = '#78909c';
-        ctx.beginPath();
-        ctx.ellipse(sx + 3, sy + 8, 4, 8, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Silo roof
-        ctx.fillStyle = '#546e7a';
-        ctx.beginPath();
-        ctx.ellipse(sx + 3, sy - 2, 5, 3, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Weather vane on silo
-        ctx.strokeStyle = '#424242';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(sx + 3, sy - 2);
-        ctx.lineTo(sx + 3, sy - 8);
+        ctx.moveTo(startX, yOffset);
+        ctx.lineTo(endX, yOffset);
         ctx.stroke();
+    }
 
-        ctx.fillStyle = '#ff5722';
-        ctx.beginPath();
-        ctx.moveTo(sx + 3, sy - 8);
-        ctx.lineTo(sx + 6, sy - 6);
-        ctx.lineTo(sx + 3, sy - 7);
-        ctx.closePath();
-        ctx.fill();
+    // Draw rows of crops
+    const cropColors = ['#32CD32', '#7CFC00', '#ADFF2F']; // LimeGreen, LawnGreen, GreenYellow
+    for (let i = -2; i <= 2; i++) {
+        const yOffset = i * (fieldH / 7);
+        const rowColor = cropColors[Math.abs(i) % cropColors.length];
+        ctx.fillStyle = rowColor;
+
+        // Draw little tufts of crops along the furrow
+        for (let j = -3; j <= 3; j++) {
+            const xOffset = j * 8; // No random offset
+            const cropSize = 3; // Fixed size
+            
+            // Simple circle for a tuft of plant
+            ctx.beginPath();
+            ctx.arc(xOffset, yOffset - cropSize / 2, cropSize, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    ctx.restore();
+}
+
+    // Draws a small factory/industry building
+    function drawFactory(x, y) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        const stoneColors = ['#FF6347', '#FFD700', '#00BFFF', '#EE82EE']; // Tomato, Gold, DeepSkyBlue, Violet
+        const numStones = 10;
+
+        for (let i = 0; i < numStones; i++) {
+            const stoneSizeX = 8 + (i % 5) * 2; // Deterministic size based on index
+            const stoneSizeY = 4 + (i % 3) * 1.5; // Deterministic size based on index
+
+            // Deterministic position within the tile bounds
+            const px = (i * 5 % TILE_WIDTH / 2) - TILE_WIDTH / 4;
+            const py = (i * 3 % TILE_HEIGHT / 2) - TILE_HEIGHT / 4;
+
+            ctx.fillStyle = stoneColors[i % stoneColors.length];
+
+            // Draw a small rhombus for each stone
+            ctx.beginPath();
+            ctx.moveTo(px, py - stoneSizeY / 2);
+            ctx.lineTo(px + stoneSizeX / 2, py);
+            ctx.lineTo(px, py + stoneSizeY / 2);
+            ctx.lineTo(px - stoneSizeX / 2, py);
+            ctx.closePath();
+            ctx.fill();
+
+            // Add a border for definition
+            ctx.strokeStyle = shadeColor(ctx.fillStyle, -20);
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+        }
 
         ctx.restore();
     }
 
-    // Draws a small factory/industry building
-    function drawFactory(x, y) {
-        // foundation shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.18)';
-        ctx.beginPath();
-        ctx.ellipse(x, y + TILE_HEIGHT, 36, 12, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // main building body
-        ctx.fillStyle = '#9e9e9e';
-        ctx.fillRect(x - 28, y - 38, 56, 28);
-
-        // roof and detail
-        ctx.fillStyle = '#707070';
-        ctx.fillRect(x - 28, y - 44, 56, 6);
-
-        // smoke stack
-        ctx.fillStyle = '#5d5d5d';
-        ctx.fillRect(x + 12, y - 60, 8, 24);
-        // smoke
-        ctx.fillStyle = 'rgba(120,120,120,0.5)';
-        ctx.beginPath();
-        ctx.ellipse(x + 18, y - 68, 10, 6, 0, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
     // Draws a circus tent
     function drawCircus(x, y) {
-        // shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.18)';
-        ctx.beginPath();
-        ctx.ellipse(x, y + TILE_HEIGHT, 34, 10, 0, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.save();
+        ctx.translate(x, y);
 
-        // tent base (circle-ish)
-        ctx.fillStyle = '#F06292';
-        ctx.beginPath();
-        ctx.moveTo(x, y - 36);
-        ctx.lineTo(x + 26, y - 6);
-        ctx.lineTo(x - 26, y - 6);
-        ctx.closePath();
-        ctx.fill();
+        const colors = ['#FF1493', '#00BFFF', '#FFD700', '#ADFF2F', '#FF4500']; // DeepPink, DeepSkyBlue, Gold, GreenYellow, OrangeRed
+        const numChecksX = 6;
+        const numChecksY = 6;
 
-        // tent stripes
-        ctx.fillStyle = '#FFF176';
-        ctx.beginPath();
-        ctx.moveTo(x, y - 36);
-        ctx.lineTo(x + 12, y - 6);
-        ctx.lineTo(x + 6, y - 6);
-        ctx.closePath();
-        ctx.fill();
+        const stepX = TILE_WIDTH / numChecksX;
+        const stepY = TILE_HEIGHT / numChecksY;
 
-        // flag pole
-        ctx.fillStyle = '#8B4513';
-        ctx.fillRect(x - 2, y - 36, 4, 18);
-        ctx.fillStyle = '#ffeb3b';
-        ctx.beginPath();
-        ctx.moveTo(x + 2, y - 36);
-        ctx.lineTo(x + 14, y - 30);
-        ctx.lineTo(x + 2, y - 28);
-        ctx.closePath();
-        ctx.fill();
+        for (let i = 0; i < numChecksX; i++) {
+            for (let j = 0; j < numChecksY; j++) {
+                // Convert grid coordinates to isometric space
+                const isoX = (i - j) * (stepX / 2);
+                const isoY = (i + j) * (stepY / 2);
+
+                // Center the pattern
+                const centeredX = isoX - TILE_WIDTH / 2 + stepX / 2;
+                const centeredY = isoY;
+
+                ctx.fillStyle = colors[(i + j) % colors.length];
+
+                ctx.beginPath();
+                ctx.moveTo(centeredX, centeredY);
+                ctx.lineTo(centeredX + stepX / 2, centeredY + stepY / 2);
+                ctx.lineTo(centeredX, centeredY + stepY);
+                ctx.lineTo(centeredX - stepX / 2, centeredY + stepY / 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        ctx.restore();
     }
     
+    // Draws a simple tractor
+    function drawTractor(x, y, color) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        const bodyWidth = 40;
+        const bodyHeight = 24;
+        const wheelRadius = 10;
+
+        // Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        ctx.beginPath();
+        ctx.ellipse(0, TILE_HEIGHT, bodyWidth * 0.8, bodyWidth * 0.4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Wheels (draw first to be behind body)
+        ctx.fillStyle = '#212121';
+        ctx.beginPath();
+        ctx.arc(-bodyWidth / 2 + 2, TILE_HEIGHT - wheelRadius / 2, wheelRadius, 0, Math.PI * 2); // Back wheel
+        ctx.arc(bodyWidth / 2 - 2, TILE_HEIGHT - wheelRadius / 2, wheelRadius * 0.8, 0, Math.PI * 2); // Front wheel
+        ctx.fill();
+
+        // Body
+        ctx.fillStyle = color;
+        ctx.fillRect(-bodyWidth / 2, TILE_HEIGHT - bodyHeight, bodyWidth, bodyHeight);
+        ctx.restore();
+    }
+
     // Draws the player character
     function drawPlayer(isoX, isoY) {
-         // Player shadow (larger for full body)
+        // Player shadow
         ctx.fillStyle = player.shadowColor;
         ctx.beginPath();
         ctx.ellipse(isoX, isoY + TILE_HEIGHT + 8, player.width * 0.8, player.width * 0.4, 0, 0, Math.PI * 2);
@@ -687,120 +741,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const playerTopY = isoY - player.height + TILE_HEIGHT;
 
-        // Draw legs first (behind body)
-        const legHeight = 12;
-        const legWidth = 6;
+        // --- Body and Dress ---
+        const dressColor = player.color; // Pastel purple
+        const skinColor = '#FFDBAC';
 
-        // Left leg
-        ctx.fillStyle = '#0066cc'; // Blue overalls
-        ctx.fillRect(isoX - 6, playerTopY + player.height, legWidth, legHeight);
-
-        // Right leg
-        ctx.fillRect(isoX + 2, playerTopY + player.height, legWidth, legHeight);
-
-        // Feet (shoes)
-        ctx.fillStyle = '#8B4513'; // Brown shoes
-        ctx.fillRect(isoX - 7, playerTopY + player.height + legHeight, legWidth + 2, 4);
-        ctx.fillRect(isoX + 1, playerTopY + player.height + legHeight, legWidth + 2, 4);
-
-        // Main body (overalls)
-        ctx.fillStyle = player.color; // Red shirt
-        ctx.fillRect(isoX - player.width / 2, playerTopY, player.width, player.height);
-
-        // Overall straps
-        ctx.fillStyle = '#0066cc'; // Blue overalls
-        ctx.fillRect(isoX - player.width / 2 + 2, playerTopY, 4, player.height);
-        ctx.fillRect(isoX + player.width / 2 - 6, playerTopY, 4, player.height);
+        // Dress (main body) - A-line shape
+        ctx.fillStyle = dressColor;
+        ctx.beginPath();
+        ctx.moveTo(isoX - player.width / 2 + 2, playerTopY); // Top-left
+        ctx.lineTo(isoX + player.width / 2 - 2, playerTopY); // Top-right
+        ctx.lineTo(isoX + player.width, playerTopY + player.height + 10); // Bottom-right
+        ctx.lineTo(isoX - player.width, playerTopY + player.height + 10); // Bottom-left
+        ctx.closePath();
+        ctx.fill();
 
         // Arms
-        const armHeight = 16;
         const armWidth = 5;
-
+        ctx.fillStyle = skinColor;
         // Left arm
-        ctx.fillStyle = player.color; // Red shirt
-        ctx.fillRect(isoX - player.width / 2 - armWidth - 2, playerTopY + 6, armWidth, armHeight);
-
+        ctx.fillRect(isoX - player.width / 2 - armWidth, playerTopY + 2, armWidth, 12);
         // Right arm
-        ctx.fillRect(isoX + player.width / 2 + 2, playerTopY + 6, armWidth, armHeight);
+        ctx.fillRect(isoX + player.width / 2, playerTopY + 2, armWidth, 12);
 
-        // Hands
-        ctx.fillStyle = '#FFDBAC'; // Skin color
-        ctx.fillRect(isoX - player.width / 2 - armWidth - 2, playerTopY + armHeight + 4, armWidth + 1, 6);
-        ctx.fillRect(isoX + player.width / 2 + 2, playerTopY + armHeight + 4, armWidth + 1, 6);
+        // Legs
+        const legWidth = 6;
+        // Left leg
+        ctx.fillRect(isoX - legWidth, playerTopY + player.height + 10, legWidth, 10);
+        // Right leg
+        ctx.fillRect(isoX, playerTopY + player.height + 10, legWidth, 10);
 
-        // Draw voluminous hair (Mario-style)
-        const hairColor = '#8B4513'; // Brown hair color
-        const hairTopY = playerTopY - 10;
+        // Feet (shoes)
+        ctx.fillStyle = '#8A2BE2'; // BlueViolet
+        ctx.fillRect(isoX - legWidth - 1, playerTopY + player.height + 20, legWidth + 2, 4);
+        ctx.fillRect(isoX - 1, playerTopY + player.height + 20, legWidth + 2, 4);
 
-        // Main hair mass (top of head)
+        // --- Head and Hair ---
+        const hairColor = '#8B4513'; // SaddleBrown
+        const hairTopY = playerTopY - 12;
+
+        // Draw a mass of curly hair using overlapping circles
         ctx.fillStyle = hairColor;
-        ctx.beginPath();
-        ctx.ellipse(isoX, hairTopY + 2, player.width * 0.9, player.width * 0.7, 0, 0, Math.PI * 2);
-        ctx.fill();
+        const curlSize = 8;
+        // Back layer of curls
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.arc(isoX - 15 + i * 7, hairTopY + 15, curlSize, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        // Mid layer
+        for (let i = 0; i < 6; i++) {
+            ctx.beginPath();
+            ctx.arc(isoX - 18 + i * 7, hairTopY + 8, curlSize, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        // Top layer
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.arc(isoX - 15 + i * 7, hairTopY + 2, curlSize, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
-        // Left side hair
+        // Face
+        ctx.fillStyle = skinColor;
         ctx.beginPath();
-        ctx.ellipse(isoX - 10, hairTopY + 4, player.width * 0.45, player.width * 0.55, 0, 0, Math.PI * 2);
+        ctx.arc(isoX, playerTopY + 4, 8, 0, Math.PI * 2);
         ctx.fill();
-
-        // Right side hair
-        ctx.beginPath();
-        ctx.ellipse(isoX + 10, hairTopY + 4, player.width * 0.45, player.width * 0.55, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Back hair (longer strands)
-        ctx.beginPath();
-        ctx.ellipse(isoX, hairTopY + 9, player.width * 0.8, player.width * 0.35, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Hair texture/highlights
-        ctx.fillStyle = shadeColor(hairColor, 30);
-        ctx.beginPath();
-        ctx.ellipse(isoX - 4, hairTopY + 1, player.width * 0.35, player.width * 0.3, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.ellipse(isoX + 5, hairTopY + 2, player.width * 0.3, player.width * 0.25, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Mario-style face
-        ctx.fillStyle = '#FFDBAC'; // Skin color
-        ctx.fillRect(isoX - 6, playerTopY + 4, 12, 14);
 
         // Eyes
         ctx.fillStyle = '#000';
-        ctx.fillRect(isoX - 4, playerTopY + 6, 3, 3);
-        ctx.fillRect(isoX + 1, playerTopY + 6, 3, 3);
-
-        // Eye whites
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(isoX - 3, playerTopY + 7, 1, 1);
-        ctx.fillRect(isoX + 2, playerTopY + 7, 1, 1);
-
-        // Mario mustache
-        ctx.fillStyle = '#000';
-        ctx.fillRect(isoX - 4, playerTopY + 10, 8, 2);
-
-        // Nose
-        ctx.fillStyle = '#FFDBAC';
-        ctx.fillRect(isoX - 1, playerTopY + 8, 2, 3);
+        ctx.fillRect(isoX - 4, playerTopY + 2, 2, 3); // Left eye
+        ctx.fillRect(isoX + 2, playerTopY + 2, 2, 3); // Right eye
 
         // Mouth
-        ctx.fillStyle = '#000';
-        ctx.fillRect(isoX - 2, playerTopY + 13, 4, 1);
-
-        // Hat (Mario's iconic cap)
-        ctx.fillStyle = '#ff0000'; // Red hat
-        ctx.fillRect(isoX - 10, hairTopY - 2, 20, 6);
-
-        // Hat brim
-        ctx.fillRect(isoX - 12, hairTopY + 4, 24, 2);
-
-        // Hat logo (M)
-        ctx.fillStyle = '#fff';
-        ctx.font = "8px monospace";
-        ctx.textAlign = "center";
-        ctx.fillText("M", isoX, hairTopY + 2);
+        ctx.beginPath();
+        ctx.arc(isoX, playerTopY + 8, 2, 0, Math.PI, false);
+        ctx.stroke();
     }
 
     // Utility to darken/lighten a color
@@ -832,6 +847,42 @@ document.addEventListener('DOMContentLoaded', () => {
     function render() {
         // Clear screen
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw a sky-like background
+        const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        skyGradient.addColorStop(0, '#87CEFA'); // LightSkyBlue
+        skyGradient.addColorStop(1, '#AFEEEE'); // PaleTurquoise
+        ctx.fillStyle = skyGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // --- Draw and Update Clouds ---
+        // Clouds are drawn in screen space, so we do this before the camera transform
+        clouds.forEach(cloud => {
+            // Move the cloud
+            cloud.x += cloud.speed;
+            // If cloud moves off-screen to the right, wrap it to the left
+            if (cloud.x > canvas.width + cloud.size) {
+                cloud.x = -cloud.size;
+            }
+            drawCloud(cloud.x, cloud.y, cloud.size);
+        });
+
+        // --- Update Tractors ---
+        tractors.forEach(tractor => {
+            let nextX = tractor.x + tractor.dir.dx * tractor.speed;
+            let nextY = tractor.y + tractor.dir.dy * tractor.speed;
+
+            // Check bounds and if the next tile is still a crop tile
+            if (nextX >= 0 && nextX < MAP_COLS && nextY >= 0 && nextY < MAP_ROWS && map[Math.floor(nextY)][Math.floor(nextX)] === 7) {
+                tractor.x = nextX;
+                tractor.y = nextY;
+            } else {
+                // If it hits a boundary or non-crop tile, find a new direction
+                findNewTractorDirection(tractor);
+            }
+        });
+
+
         ctx.save();
 
         // Center camera: if initialView is true, center on map and keep the fit zoom
@@ -855,34 +906,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (let y = 0; y < MAP_ROWS; y++) {
             for (let x = 0; x < MAP_COLS; x++) {
-                const iso = toIsometric(x, y);
+                let iso = toIsometric(x, y);
                 const tileType = map[y][x];
+                const height = heightMap[y][x] || 0;
 
                 // Draw base tile
                 switch (tileType) {
                     case 0: // Grass
-                        drawTile(iso.x, iso.y, '#65C45B');
+                        iso.y -= height * (TILE_HEIGHT / 2); // Raise tile based on height
+                        drawTile(iso.x, iso.y, shadeColor('#7CFC00', height * 5)); // LawnGreen
                         break;
                     case 1: // Path
-                        drawTile(iso.x, iso.y, '#E7D6A3');
+                        // Check if path is over water to draw a bridge
+                        const isOverWater = 
+                            (y > 0 && map[y-1][x] === 2 && waterBodyMap[y-1][x] === largestWaterBodyId) ||
+                            (y < MAP_ROWS - 1 && map[y+1][x] === 2 && waterBodyMap[y+1][x] === largestWaterBodyId) ||
+                            (x > 0 && map[y][x-1] === 2 && waterBodyMap[y][x-1] === largestWaterBodyId) ||
+                            (x < MAP_COLS - 1 && map[y][x+1] === 2 && waterBodyMap[y][x+1] === largestWaterBodyId);
+
+                        if (isOverWater) {
+                            drawBridge(iso.x, iso.y, x, y);
+                        } else {
+                            drawTile(iso.x, iso.y, '#FFFACD'); // LemonChiffon
+                        }
                         break;
                     case 2: // Water
-                        drawTile(iso.x, iso.y, '#67D4E1');
+                        drawWater(iso.x, iso.y, x, y);
                         break;
                     case 7: // Crops
-                        drawTile(iso.x, iso.y, '#7CC576');
+                        drawTile(iso.x, iso.y, '#DEB887'); // Draw base soil
+                        drawCrops(iso.x, iso.y); // Draw the crop details on top
                         break;
                     case 8: // Industry
-                        drawTile(iso.x, iso.y, '#CFCFCF');
+                        drawTile(iso.x, iso.y, '#B0C4DE'); // LightSteelBlue base
                         break;
                     case 9: // Circus
-                        drawTile(iso.x, iso.y, '#F8BBD0');
+                        drawTile(iso.x, iso.y, '#FFDAB9'); // PeachPuff base
                         break;
                     case 3: // Tree placeholder
                     case 4: // Flower placeholder
                     case 5: // Hut placeholder
                     case 6: // Sign placeholder
-                        drawTile(iso.x, iso.y, '#65C45B'); // Draw grass underneath
+                        iso.y -= height * (TILE_HEIGHT / 2); // Also raise grass under objects
+                        drawTile(iso.x, iso.y, shadeColor('#7CFC00', height * 5)); // Draw grass underneath
                         break;
                 }
 
@@ -899,8 +965,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     objectsToDraw.push({type: 'hut', iso});
                 } else if (tileType === 6) {
                     objectsToDraw.push({type: 'sign', iso});
-                } else if (tileType === 7) {
-                    objectsToDraw.push({type: 'crops', iso});
                 } else if (tileType === 8) {
                     objectsToDraw.push({type: 'factory', iso});
                 } else if (tileType === 9) {
@@ -915,6 +979,12 @@ document.addEventListener('DOMContentLoaded', () => {
             objectsToDraw.push({type: 'interactive', iso, meta: it});
         }
         
+        // Add tractors to draw queue
+        for (const tractor of tractors) {
+            const iso = toIsometric(tractor.x, tractor.y);
+            objectsToDraw.push({type: 'tractor', iso, meta: tractor});
+        }
+
         // --- Draw Objects and Player (sorted by Y for correct overlap) ---
         objectsToDraw.sort((a,b) => (a.iso.y) - (b.iso.y));
 
@@ -924,10 +994,10 @@ document.addEventListener('DOMContentLoaded', () => {
                      drawPlayer(obj.iso.x, obj.iso.y);
                      break;
                 case 'tree':
-                    drawObject(obj.iso.x, obj.iso.y, '#2a751a', 50, 25);
+                    drawTree(obj.iso.x, obj.iso.y);
                     break;
                 case 'flower':
-                    drawObject(obj.iso.x, obj.iso.y, '#ff69b4', 10, 5);
+                    drawObject(obj.iso.x, obj.iso.y, '#FFD700', 10, 5); // Gold
                     break;
                 case 'hut':
                     drawHut(obj.iso.x, obj.iso.y);
@@ -939,9 +1009,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     // draw a small red square to represent the interactive object
                     ctx.save();
                     ctx.translate(obj.iso.x, obj.iso.y - 8); // slightly above ground
-                    ctx.fillStyle = '#ff4500';
+                    ctx.fillStyle = '#FF1493'; // DeepPink
                     ctx.fillRect(-6, -6, 12, 12);
                     ctx.restore();
+                    break;
+                case 'factory':
+                    drawFactory(obj.iso.x, obj.iso.y);
+                    break;
+                case 'circus':
+                    drawCircus(obj.iso.x, obj.iso.y);
+                    break;
+                case 'tractor':
+                    drawTractor(obj.iso.x, obj.iso.y, obj.meta.color);
                     break;
             }
         });
@@ -1065,6 +1144,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Compute and set initial fitted zoom so the whole map is visible on start
         zoom = computeFitZoom();
+
+        // Create the initial set of clouds
+        initClouds();
+
+        // Generate the terrain heightmap
+        initHeightMap();
+
+        // Identify and label all bodies of water
+        identifyWaterBodies();
+
+        // Create the tractors
+        initTractors();
 
         // Add listeners
         window.addEventListener('keydown', handleKeyDown);
