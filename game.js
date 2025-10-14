@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const TILE_HEIGHT = TILE_WIDTH / 2;
     let zoom = 1.0;
     let messageVisible = false;
+    let initialView = true; // true at start: show entire map fitted to canvas
 
     // --- Map Data ---
     // Tile legend:
@@ -17,55 +18,55 @@ document.addEventListener('DOMContentLoaded', () => {
                                 // Single explicit 60x60 map with the small map centered at offsets (15, 15)
                                 const map = [
     // rows 0..14: top padding (60 zeros each)
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
     // row15 -> start of centered small map
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,0,0,0,0,0,0,9,9,9,9,0,0,7,7,7,7,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,0,0,0,1,1,1,0,9,9,9,9,0,0,7,7,7,7,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,3,3,3,3,0,0,0,1,0,0,0,0,5,5,0,0,0,7,7,7,7,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,3,4,3,3,0,0,0,1,0,3,3,3,5,5,0,0,0,7,7,7,7,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,3,3,4,3,0,0,1,1,1,1,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,7,7,7,7,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,4,1,4,1,1,1,1,1,0,0,0,0,7,7,7,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,5,5,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,5,5,5,1,1,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,5,5,5,5,1,1,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,8,8,8,8,8,8,0,0,0,0,0,0,9,9,9,9,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,8,8,8,8,8,0,0,0,1,1,1,0,9,9,9,9,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,8,3,3,3,3,0,0,0,1,0,0,0,0,5,5,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,8,3,4,3,3,0,0,0,1,0,3,3,3,5,5,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,8,3,3,4,3,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,4,1,4,1,1,1,1,1,0,0,0,0,7,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,5,5,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,5,1,5,1,1,5,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,5,1,1,5,1,1,5,5,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
     // rows 31..44: continue centered smallMap rows
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,1,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,3,0,0,3,0,0,0,0,0,0,0],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,3,0,0,0,3,0,0,0,0],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     // rows 45..59 bottom padding (all zeros)
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
+    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3]
 ];
 
     // --- Overlay: central path and city ---
@@ -79,15 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const centerX = Math.floor(cols / 2); // central column
         const centerY = Math.floor(rows / 2); // central row
 
-        // Vertical path down the center
-        for (let y = 0; y < rows; y++) {
-            map[y][centerX] = 1;
-        }
-
-        // Horizontal path across the center
-        for (let x = 0; x < cols; x++) {
-            map[centerY][x] = 1;
-        }
+        // NOTE: removed global center cross (vertical/horizontal paths) so the
+        // map's literal content remains authoritative.
 
         // City layout parameters
         const cityRadius = 2; // creates a 5x5 block
@@ -181,6 +175,26 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- Utility Functions ---
+
+    // Compute a zoom level that fits the whole map into the canvas with a small margin
+    function computeFitZoom() {
+        const cols = MAP_COLS;
+        const rows = MAP_ROWS;
+        // isometric extents
+        const isoMinX = -(rows - 1) * (TILE_WIDTH / 2);
+        const isoMaxX = (cols - 1) * (TILE_WIDTH / 2);
+        const mapWidth = isoMaxX - isoMinX + TILE_WIDTH; // add tile width margin
+
+        const isoMaxY = (cols - 1 + rows - 1) * (TILE_HEIGHT / 2);
+        const mapHeight = isoMaxY + TILE_HEIGHT; // add vertical margin
+
+        const margin = 80; // pixels
+        const fitX = (canvas.width - margin) / mapWidth;
+        const fitY = (canvas.height - margin) / mapHeight;
+        const fit = Math.min(fitX, fitY);
+        // Clamp to reasonable range
+        return Math.max(0.1, Math.min(fit, 3.0));
+    }
 
     // Convert 2D map coordinates to isometric screen coordinates
     function toIsometric(x, y) {
@@ -303,25 +317,300 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fill();
     }
     
-    // Draws a crop field (rows of crops)
+    // Draws a rich agricultural crop field with furrows, diverse crops, and detailed farm equipment
     function drawCrops(x, y) {
-        const rows = 4;
-        const spacing = 6;
-        // Slight shadow under the crop patch
-        ctx.fillStyle = 'rgba(0,0,0,0.12)';
+        ctx.save();
+        ctx.translate(x, y);
+
+        // Enhanced shadow with more realistic depth
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
         ctx.beginPath();
-        ctx.ellipse(x, y + TILE_HEIGHT, 30, 10, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, TILE_HEIGHT, 42, 16, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw several crop rows as green strips
-        for (let i = -rows; i <= rows; i++) {
-            ctx.fillStyle = shadeColor('#4CAF50', (i % 2 === 0) ? 10 : -5);
-            ctx.fillRect(x - 22, y - 8 + i * spacing, 44, 4);
+        // Field base with textured tilled soil appearance
+        const fieldW = 52;
+        const fieldH = 26;
+        ctx.fillStyle = '#6d3f1f'; // Base soil color
+        ctx.beginPath();
+        ctx.rect(-fieldW / 2, -14, fieldW, fieldH);
+        ctx.fill();
+
+        // Add soil texture with subtle horizontal lines
+        ctx.strokeStyle = '#5a3317';
+        ctx.lineWidth = 0.8;
+        for (let i = -12; i <= 12; i += 2) {
+            ctx.beginPath();
+            ctx.moveTo(-fieldW / 2, i);
+            ctx.lineTo(fieldW / 2, i);
+            ctx.stroke();
         }
-        // Add small yellow highlights to suggest ripe crops
-        ctx.fillStyle = '#FFD54F';
-        ctx.fillRect(x - 6, y - 6, 4, 3);
-        ctx.fillRect(x + 2, y - 2, 4, 3);
+
+        // Multiple furrow rows with realistic curved plowing patterns
+        for (let i = -3; i <= 3; i++) {
+            const yy = -10 + i * 4.5;
+            ctx.beginPath();
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = (i % 2 === 0) ? '#5d2e0a' : '#7d4f1f';
+
+            // Create more realistic S-curved furrows
+            const segments = 8;
+            const segmentWidth = fieldW / segments;
+            ctx.moveTo(-fieldW / 2, yy);
+
+            for (let s = 0; s < segments; s++) {
+                const sx = -fieldW / 2 + s * segmentWidth;
+                const nextX = -fieldW / 2 + (s + 1) * segmentWidth;
+                const controlOffset = (Math.sin(s * 0.5) * 3) + ((i % 2 === 0) ? 4 : -3);
+                ctx.quadraticCurveTo(sx + segmentWidth / 2, yy + controlOffset, nextX, yy);
+            }
+            ctx.stroke();
+        }
+
+        // Diverse crop rows with varying plant types and growth stages
+        const cropRows = [
+            { y: -12, type: 'corn', color: '#2d5016', height: 8, width: 4 },
+            { y: -6, type: 'wheat', color: '#4a7c2a', height: 6, width: 3 },
+            { y: 0, type: 'mixed', color: '#1f3f0f', height: 7, width: 3.5 },
+            { y: 6, type: 'vegetables', color: '#3e6b1e', height: 5, width: 2.5 }
+        ];
+
+        cropRows.forEach(row => {
+            ctx.fillStyle = row.color;
+            for (let px = -fieldW / 2 + 8; px <= fieldW / 2 - 8; px += 12) {
+                // Vary plant heights for more natural appearance
+                const plantHeight = row.height + (Math.sin(px * 0.3) * 2);
+                const plantWidth = row.width + (Math.cos(px * 0.2) * 1);
+
+                // Main plant stem/body
+                ctx.beginPath();
+                ctx.moveTo(px, row.y);
+                ctx.lineTo(px - plantWidth, row.y + plantHeight);
+                ctx.lineTo(px + plantWidth, row.y + plantHeight);
+                ctx.closePath();
+                ctx.fill();
+
+                // Add leaves or grain heads based on crop type
+                if (row.type === 'corn') {
+                    // Corn husks
+                    ctx.fillStyle = '#4a7c2a';
+                    ctx.fillRect(px - 1, row.y + 2, 2, 4);
+                    ctx.fillRect(px - 2, row.y + 1, 4, 2);
+                } else if (row.type === 'wheat') {
+                    // Wheat grain heads
+                    ctx.fillStyle = '#d4b896';
+                    ctx.beginPath();
+                    ctx.ellipse(px, row.y - 2, 2, 4, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    // Mixed vegetables - occasional flowers
+                    if (Math.random() > 0.7) {
+                        ctx.fillStyle = '#ff6b35';
+                        ctx.beginPath();
+                        ctx.ellipse(px, row.y - 1, 1.5, 1.5, 0, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                ctx.fillStyle = row.color; // Reset color
+            }
+        });
+
+        // Advanced irrigation system with sprinklers
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#1976d2';
+        ctx.fillStyle = '#42a5f5';
+
+        // Main irrigation pipes
+        for (let i = -2; i <= 2; i++) {
+            const iy = -8 + i * 6;
+            ctx.beginPath();
+            ctx.moveTo(-fieldW / 2 + 4, iy);
+            ctx.lineTo(fieldW / 2 - 4, iy);
+            ctx.stroke();
+
+            // Add sprinkler heads
+            if (i % 2 === 0) {
+                ctx.beginPath();
+                ctx.ellipse(-fieldW / 2 + 8, iy, 3, 3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.ellipse(fieldW / 2 - 8, iy, 3, 3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            }
+        }
+
+        // Enhanced detailed tractor with more realistic features
+        const tx = -fieldW / 2 + 12;
+        const ty = 8;
+
+        // Tractor shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        ctx.beginPath();
+        ctx.ellipse(tx + 5, ty + 8, 18, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Main tractor body
+        ctx.fillStyle = '#e65100';
+        ctx.fillRect(tx, ty - 8, 16, 8);
+
+        // Tractor cabin with windows
+        ctx.fillStyle = '#bf360c';
+        ctx.fillRect(tx + 6, ty - 14, 8, 7);
+
+        // Cabin windows
+        ctx.fillStyle = '#81c784';
+        ctx.fillRect(tx + 7, ty - 12, 3, 3);
+        ctx.fillRect(tx + 11, ty - 12, 3, 3);
+
+        // Tractor exhaust pipe
+        ctx.fillStyle = '#424242';
+        ctx.fillRect(tx + 14, ty - 10, 2, 6);
+
+        // Smoke from exhaust
+        ctx.fillStyle = 'rgba(100,100,100,0.4)';
+        ctx.beginPath();
+        ctx.ellipse(tx + 16, ty - 12, 4, 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Large rear wheels with treads
+        ctx.fillStyle = '#212121';
+        ctx.beginPath();
+        ctx.ellipse(tx + 3, ty + 1, 4, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Wheel treads
+        ctx.strokeStyle = '#424242';
+        ctx.lineWidth = 1;
+        for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
+            const treadX = tx + 3 + Math.cos(angle) * 3;
+            const treadY = ty + 1 + Math.sin(angle) * 3;
+            ctx.beginPath();
+            ctx.moveTo(treadX, treadY);
+            ctx.lineTo(treadX + Math.cos(angle) * 2, treadY + Math.sin(angle) * 2);
+            ctx.stroke();
+        }
+
+        // Front wheels
+        ctx.beginPath();
+        ctx.ellipse(tx + 12, ty + 1, 3, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Tractor attachment (plow or harrow)
+        ctx.fillStyle = '#616161';
+        ctx.fillRect(tx - 4, ty - 2, 8, 4);
+
+        // Plow tines
+        ctx.strokeStyle = '#212121';
+        ctx.lineWidth = 2;
+        for (let tine = 0; tine < 3; tine++) {
+            ctx.beginPath();
+            ctx.moveTo(tx + tine * 2, ty - 2);
+            ctx.lineTo(tx + tine * 2, ty + 6);
+            ctx.stroke();
+        }
+
+        // Farm worker figure near tractor
+        const wx = tx + 20;
+        const wy = ty - 4;
+
+        // Worker body
+        ctx.fillStyle = '#1976d2';
+        ctx.fillRect(wx, wy, 4, 8);
+
+        // Worker head
+        ctx.fillStyle = '#ffdbac';
+        ctx.beginPath();
+        ctx.ellipse(wx + 2, wy - 2, 3, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Worker hat
+        ctx.fillStyle = '#d32f2f';
+        ctx.fillRect(wx - 1, wy - 4, 6, 2);
+
+        // Enhanced barn with more detail
+        const bx = fieldW / 2 + 15;
+        const by = 2;
+
+        // Barn shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.beginPath();
+        ctx.ellipse(bx + 6, by + 12, 20, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Barn foundation
+        ctx.fillStyle = '#5d4037';
+        ctx.fillRect(bx, by - 12, 18, 12);
+
+        // Barn walls with texture
+        ctx.fillStyle = '#8d6e63';
+        ctx.fillRect(bx + 2, by - 10, 14, 8);
+
+        // Barn roof
+        ctx.fillStyle = '#6d4c41';
+        ctx.beginPath();
+        ctx.moveTo(bx - 2, by - 10);
+        ctx.lineTo(bx + 9, by - 20);
+        ctx.lineTo(bx + 20, by - 10);
+        ctx.closePath();
+        ctx.fill();
+
+        // Roof shingles texture
+        ctx.strokeStyle = '#5d4037';
+        ctx.lineWidth = 1;
+        for (let shingle = 0; shingle < 4; shingle++) {
+            ctx.beginPath();
+            ctx.moveTo(bx + shingle * 4, by - 10);
+            ctx.lineTo(bx + 2 + shingle * 4, by - 18);
+            ctx.lineTo(bx + 4 + shingle * 4, by - 10);
+            ctx.stroke();
+        }
+
+        // Barn door
+        ctx.fillStyle = '#3e2723';
+        ctx.fillRect(bx + 6, by - 5, 6, 7);
+
+        // Door handle
+        ctx.fillStyle = '#ffc107';
+        ctx.beginPath();
+        ctx.ellipse(bx + 10, by - 2, 1, 1, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Silo next to barn
+        const sx = bx + 22;
+        const sy = by - 6;
+
+        ctx.fillStyle = '#78909c';
+        ctx.beginPath();
+        ctx.ellipse(sx + 3, sy + 8, 4, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Silo roof
+        ctx.fillStyle = '#546e7a';
+        ctx.beginPath();
+        ctx.ellipse(sx + 3, sy - 2, 5, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Weather vane on silo
+        ctx.strokeStyle = '#424242';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(sx + 3, sy - 2);
+        ctx.lineTo(sx + 3, sy - 8);
+        ctx.stroke();
+
+        ctx.fillStyle = '#ff5722';
+        ctx.beginPath();
+        ctx.moveTo(sx + 3, sy - 8);
+        ctx.lineTo(sx + 6, sy - 6);
+        ctx.lineTo(sx + 3, sy - 7);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
     }
 
     // Draws a small factory/industry building
@@ -545,10 +834,17 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
 
-        // Center camera on player
+        // Center camera: if initialView is true, center on map and keep the fit zoom
         const playerIso = toIsometric(player.x, player.y);
-        camera.x = canvas.width / 2 - playerIso.x * zoom;
-        camera.y = canvas.height / 2 - playerIso.y * zoom;
+        if (initialView) {
+            // center on map midpoint
+            const centerIso = toIsometric((MAP_COLS - 1) / 2, (MAP_ROWS - 1) / 2);
+            camera.x = canvas.width / 2 - centerIso.x * zoom;
+            camera.y = canvas.height / 2 - centerIso.y * zoom;
+        } else {
+            camera.x = canvas.width / 2 - playerIso.x * zoom;
+            camera.y = canvas.height / 2 - playerIso.y * zoom;
+        }
         
         ctx.translate(camera.x, camera.y);
         ctx.scale(zoom, zoom);
@@ -740,6 +1036,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (targetTile !== 2 && targetTile !== 3 && targetTile !== 5 && targetTile !== 6) { // Cannot walk on water, trees, huts, signs
                  player.x = nextX;
                  player.y = nextY;
+                 // user moved — switch from initial full-map view to player-centered
+                 initialView = false;
             }
         }
     }
@@ -757,13 +1055,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function zoomOut() {
-        zoom = Math.max(zoom - 0.2, 0.5); // Min zoom 0.5x
+        zoom = Math.max(zoom - 0.2, 0.1); // Min zoom 0.1 (allow fitting smaller maps)
     }
 
     // --- Initialization ---
     function init() {
         // Set initial canvas size
         resizeCanvas();
+
+        // Compute and set initial fitted zoom so the whole map is visible on start
+        zoom = computeFitZoom();
 
         // Add listeners
         window.addEventListener('keydown', handleKeyDown);
