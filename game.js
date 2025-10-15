@@ -52,64 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Adds a vertical and horizontal path crossing the map center and a 5x5 city block.
     // interactive objects list (pre-populated with persistent signs)
     const interactives = [
-        // Sign interactions with rich content support
-        { 
-            x: 29, y: 31, 
-            message: 'EXPERIENCE',
-            content: `
-                <h3>Professional Experience</h3>
-                <p>Welcome to my Experience section!</p>
-                <p>Here you can find information about my professional journey, roles, and accomplishments.</p>
-                <p><a href="https://linkedin.com" target="_blank">View my LinkedIn Profile</a></p>
-            `
-        },
-        { 
-            x: 4, y: 8, 
-            message: 'FUN',
-            content: `
-                <h3>Fun & Hobbies</h3>
-                <p>This is the Fun Zone! 🎉</p>
-                <p>Discover my hobbies, interests, and side projects.</p>
-                <p>When I'm not coding, you'll find me exploring new technologies, playing games, or working on creative projects.</p>
-            `
-        },
-        { 
-            x: 7, y: 33, 
-            message: 'EDUCATION',
-            content: `
-                <h3>Education & Learning</h3>
-                <p>My academic background and continuous learning journey.</p>
-                <p>I believe in lifelong learning and constantly expanding my knowledge through courses, books, and hands-on projects.</p>
-            `
-        },
-        { 
-            x: 46, y: 13, 
-            message: 'PROJECTS',
-            content: `
-                <h3>Featured Projects</h3>
-                <p>Check out my portfolio of completed and ongoing projects.</p>
-                <p>From web applications to creative experiments, each project represents a learning journey and problem-solving adventure.</p>
-                <p><a href="#" target="_blank">View Projects Gallery</a></p>
-            `
-        },
-        { 
-            x: 28, y: 7, 
-            message: 'SKILLS',
-            content: `
-                <h3>Technical Skills & Expertise</h3>
-                <p>Programming languages, frameworks, and tools I work with.</p>
-                <p>I'm proficient in modern web technologies and constantly exploring new tools and techniques to improve my craft.</p>
-            `
-        },
-        { 
-            x: 46, y: 23, 
-            message: 'CERTIFICATES',
-            content: `
-                <h3>Certifications & Awards</h3>
-                <p>Professional certifications and recognitions.</p>
-                <p>View my collection of certificates from various online platforms and institutions.</p>
-            `
-        }
+        // Sign interactions now reference dedicated HTML files (content moved to those files)
+        { x: 29, y: 31, message: 'EXPERIENCE', filename: 'sign-experience.html' },
+        { x: 4,  y: 8,  message: 'FUN',        filename: 'sign-fun.html' },
+        { x: 7,  y: 33, message: 'EDUCATION',  filename: 'sign-education.html' },
+        { x: 46, y: 13, message: 'PROJECTS',   filename: 'sign-projects.html' },
+        { x: 28, y: 7,  message: 'SKILLS',     filename: 'sign-skills.html' },
+        { x: 46, y: 23, message: 'CERTIFICATES',filename: 'sign-certificates.html' }
     ];
 
     (function addCentralPathAndCity() {
@@ -1707,52 +1656,53 @@ function drawCrops(x, y) {
     `;
 
     // Show sign popup with rich content using new detailed popup
-    function showSignPopup(signData) {
-        // signData should have: title/message, content (HTML), characterSVG (optional)
+    async function showSignPopup(signData) {
+        // signData should have: title/message and filename (required).
         const title = signData.message || signData.title || 'Sign';
-        const content = signData.content || `<p>${signData.message || ''}</p>`;
-        
-        // Use player image, with graduation hat for education sign
-        let characterHTML;
-        const isEducation = (signData.title || signData.message || '').toLowerCase().includes('education');
-        if (isEducation) {
-            characterHTML = createPlayerImage(true); // pass true for graduation hat
-        } else {
-            characterHTML = signData.characterSVG || createPlayerImage();
-        }
-        
-        // Get the new popup elements
         const detailPopup = document.getElementById('signDetailPopup');
         const detailHeader = document.getElementById('signDetailHeader');
         const detailCharacter = document.getElementById('signDetailCharacter');
         const detailText = document.getElementById('signDetailText');
-        
-        // Set the content
-        if (isEducation) {
-            detailHeader.textContent = 'Academic background';
-            detailCharacter.innerHTML = characterHTML;
-            detailText.innerHTML = `
-                <ul style="font-size:1.2em;line-height:1.8;margin-bottom:16px;">
-                    <li style="margin-bottom:12px;"><strong>Delft University of Technology</strong><br>MSc. in Urban design</li>
-                    <li style="margin-bottom:12px;"><strong>Middle East Technical University</strong><br>BSc. in City and Regional Planning</li>
-                    <li style="margin-bottom:12px;"><strong>Technical University of Dortmund</strong><br>BSc. City Planning</li>
-                    <li style="margin-bottom:12px;"><strong>Google UX Design Professional Certificate</strong></li>
-                </ul>
-                <a href="https://ipekkahraman.figma.site/about" target="_blank" style="color:#0052A5;font-weight:bold;text-decoration:underline;">Learn more</a>
-            `;
-        } else {
+
+        const filename = signData.filename;
+        if (!filename) {
+            // No external file configured — show minimal unavailable message
             detailHeader.textContent = title;
-            detailCharacter.innerHTML = characterHTML;
-            detailText.innerHTML = content;
+            detailCharacter.innerHTML = createPlayerImage();
+            detailText.innerHTML = '<p style="color:#444">Content unavailable. No file configured for this sign.</p>';
+            detailPopup.style.display = 'flex';
+            setTimeout(() => detailPopup.classList.add('active'), 10);
+            messageVisible = true;
+            return;
         }
-        
-        // Show the popup with animation
-        detailPopup.style.display = 'flex';
-        setTimeout(() => {
-            detailPopup.classList.add('active');
-        }, 10);
-        
-        messageVisible = true;
+
+        try {
+            const resp = await fetch(filename, { cache: 'no-store' });
+            if (!resp.ok) throw new Error('Fetch failed');
+            const text = await resp.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, 'text/html');
+            const root = doc.querySelector('.sign-popup-content') || doc.body;
+
+            const fetchedHeader = root.querySelector('h2') ? root.querySelector('h2').textContent.trim() : title;
+            const fetchedChar = root.querySelector('.sign-detail-character');
+            const fetchedText = root.querySelector('.sign-detail-text');
+
+            detailHeader.textContent = fetchedHeader;
+            detailCharacter.innerHTML = fetchedChar ? fetchedChar.innerHTML : createPlayerImage(fetchedHeader.toLowerCase().includes('education'));
+            detailText.innerHTML = fetchedText ? fetchedText.innerHTML : root.innerHTML;
+
+            detailPopup.style.display = 'flex';
+            setTimeout(() => detailPopup.classList.add('active'), 10);
+            messageVisible = true;
+        } catch (err) {
+            detailHeader.textContent = title;
+            detailCharacter.innerHTML = createPlayerImage();
+            detailText.innerHTML = '<p style="color:#444">Content unavailable. Failed to load the sign file.</p>';
+            detailPopup.style.display = 'flex';
+            setTimeout(() => detailPopup.classList.add('active'), 10);
+            messageVisible = true;
+        }
     }
 
     function hideSignPopup() {
@@ -1806,7 +1756,10 @@ function drawCrops(x, y) {
                 const tileType = map[tileY][tileX];
                 if (tileType === 6) {
                     const interactiveSign = interactives.find(it => Math.floor(it.x) === tileX && Math.floor(it.y) === tileY);
-                    const signData = interactiveSign || { message: messages[6] };
+                    // If there's no interactive configured for this tile, derive a filename from the default message
+                    function slugify(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+                    const defaultMsg = messages[6];
+                    const signData = interactiveSign || { message: defaultMsg, filename: `sign-${slugify(defaultMsg)}.html` };
                     cinematicFocus = { player: { x: player.x, y: player.y }, target: { x: tileX, y: tileY } };
                     targetZoom = 2.5;
                     showSignPopup(signData);
