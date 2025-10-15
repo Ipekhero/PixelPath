@@ -8,6 +8,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const signPopupText = document.getElementById('signPopupText');
     const closeSignPopupButton = document.getElementById('closeSignPopup');
 
+    // Helper to set a sign's text programmatically
+    function setSignText(x, y, text) {
+        if (y < 0 || y >= map.length || x < 0 || x >= map[0].length) return false;
+        // Ensure tile is a sign
+        map[y][x] = 6;
+        // Find existing interactive
+        const idx = interactives.findIndex(it => Math.floor(it.x) === x && Math.floor(it.y) === y);
+        if (idx !== -1) {
+            interactives[idx].message = text;
+        } else {
+            interactives.push({ x, y, message: text });
+        }
+        return true;
+    }
+
+    // Expose helper to window for console editing
+    window.setSignText = setSignText;
+
     // --- Game Configuration ---
     const TILE_WIDTH = 64;
     const TILE_HEIGHT = TILE_WIDTH / 2;
@@ -56,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
     // rows 31..44: continue centered smallMap rows
     [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
     [8,8,8,2,2,2,2,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,3,0,0,3,0,0,0,0,0,0,0],
     [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,3,0,0,0,3,0,0,0,0],
     [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -76,8 +94,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Overlay: central path and city ---
     // Adds a vertical and horizontal path crossing the map center and a 5x5 city block.
-    // interactive objects list (will be filled by overlay)
-    const interactives = [];
+    // interactive objects list (pre-populated with persistent signs)
+    const interactives = [
+        // Persisted signs baked into source
+        { x: 29, y: 31, message: 'EXPERIENCE' },
+        { x: 4, y: 8, message: 'FUN' },
+        { x: 7, y: 33, message: 'EDUCATION' }
+    ];
 
     (function addCentralPathAndCity() {
         const rows = map.length;
@@ -154,6 +177,52 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     })();
+
+    // --- Update signs: remove [48,15], move PROJECTS from [45,15] to [46,13] ---
+    (function updateProjectSigns() {
+        const removeX = 48, removeY = 15;
+        // Remove any interactive at [48,15]
+        for (let i = interactives.length - 1; i >= 0; i--) {
+            const it = interactives[i];
+            if (Math.floor(it.x) === removeX && Math.floor(it.y) === removeY) {
+                interactives.splice(i, 1);
+            }
+        }
+        // If underlying map tile was a sign, reset it to grass (0)
+        if (removeY >= 0 && removeY < map.length && removeX >= 0 && removeX < (map[0] || []).length) {
+            if (map[removeY][removeX] === 6) map[removeY][removeX] = 0;
+        }
+
+        // Move PROJECTS sign from [45,15] -> [46,13]
+        const oldX = 45, oldY = 15;
+        const newX = 46, newY = 13;
+
+        // Remove old interactive and clear old tile
+        for (let i = interactives.length - 1; i >= 0; i--) {
+            const it = interactives[i];
+            if (Math.floor(it.x) === oldX && Math.floor(it.y) === oldY) {
+                interactives.splice(i, 1);
+            }
+        }
+        if (oldY >= 0 && oldY < map.length && oldX >= 0 && oldX < (map[0] || []).length) {
+            if (map[oldY][oldX] === 6) map[oldY][oldX] = 0;
+        }
+
+        // Set new tile to sign and add/update interactive
+        if (newY >= 0 && newY < map.length && newX >= 0 && newX < (map[0] || []).length) {
+            map[newY][newX] = 6;
+            const idx = interactives.findIndex(it => Math.floor(it.x) === newX && Math.floor(it.y) === newY);
+            if (idx !== -1) {
+                interactives[idx].message = 'PROJECTS';
+            } else {
+                interactives.push({ x: newX, y: newY, message: 'PROJECTS' });
+            }
+            console.log(`Updated signs: removed [${removeX},${removeY}], moved PROJECTS [${oldX},${oldY}] -> [${newX},${newY}]`);
+        }
+    })();
+
+    // NOTE: circus sign at [8,4] is now baked into the map literal and
+    // `interactives` array above; runtime patching removed.
 
     const MAP_ROWS = map.length;
     const MAP_COLS = map[0].length;
@@ -233,6 +302,26 @@ document.addEventListener('DOMContentLoaded', () => {
         map[centerY - 2][centerX + 2] = 5;
         map[centerY + 2][centerX - 2] = 5;
         map[centerY + 2][centerX + 2] = 5;
+    })();
+
+    // NOTE: Previously there was a runtime patch here to ensure a sign at [29,31].
+    // That runtime patch was removed and the sign/message are now persisted in
+    // the `map`/`interactives` data above so no IIFE patching is required at load.
+
+    // --- Add SKILLS sign at [28,7] as requested ---
+    (function addSkillsSign() {
+        const sx = 28, sy = 7;
+        if (sy >= 0 && sy < map.length && sx >= 0 && sx < map[0].length) {
+            console.log(`ADDING: placing SKILLS sign at [${sx},${sy}]`);
+            map[sy][sx] = 6; // sign tile
+            // avoid duplicates
+            const exists = interactives.find(it => Math.floor(it.x) === sx && Math.floor(it.y) === sy);
+            if (!exists) {
+                interactives.push({ x: sx, y: sy, message: 'SKILLS' });
+            }
+        } else {
+            console.warn('ADD SKILLS: coords out of bounds');
+        }
     })();
 
     // --- Wind Turbine Data ---
@@ -657,26 +746,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Draws a sign
-    function drawSign(x, y) {
-         // Shadow
-        const boardWidth = 40;
-        const boardHeight = 20;
-        ctx.fillStyle = 'rgba(0,0,0,0.2)';
-        ctx.beginPath();
-        ctx.ellipse(x, y + TILE_HEIGHT, boardWidth / 2, 8, 0, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Post
-        ctx.fillStyle = '#C71585'; // MediumVioletRed
-        ctx.fillRect(x - 3, y - 25, 6, 25 + TILE_HEIGHT);
+    function drawSign(x, y, message = "?", part = 'full') {
+        const boardWidth = 120; // Wider and more rectangular
+        const boardHeight = 40;
+        const postColor = '#778899'; // LightSlateGray for a metal look
+        const boardColor = '#0052A5'; // A nice blue
+        const textColor = '#FFFFFF';
 
-        // Board
-        ctx.fillStyle = '#FF69B4'; // HotPink
-        ctx.fillRect(x - boardWidth / 2, y - 30, boardWidth, boardHeight);
-        ctx.fillStyle = '#fff';
-        ctx.font = "12px monospace";
-        ctx.textAlign = "center";
-        ctx.fillText("?", x, y - 18);
+        if (part === 'full' || part === 'post') {
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            ctx.beginPath();
+            ctx.ellipse(x, y + TILE_HEIGHT, boardWidth / 2, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Post
+            ctx.fillStyle = postColor;
+            ctx.fillRect(x - 4, y - 50, 8, 50 + TILE_HEIGHT);
+        }
+
+        if (part === 'full' || part === 'board') {
+            // Board
+            ctx.fillStyle = boardColor;
+            ctx.fillRect(x - boardWidth / 2, y - 55, boardWidth, boardHeight);
+            ctx.strokeStyle = textColor; // White border
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x - boardWidth / 2, y - 55, boardWidth, boardHeight);
+
+            ctx.fillStyle = textColor; // White text
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            // Start with a default font size and shrink if the message is too wide
+            let fontSize = 18;
+            ctx.font = `bold ${fontSize}px Arial`;
+            const maxTextWidth = boardWidth - 12; // padding
+            let measured = ctx.measureText(message).width;
+            while (measured > maxTextWidth && fontSize > 8) {
+                fontSize -= 1;
+                ctx.font = `bold ${fontSize}px Arial`;
+                measured = ctx.measureText(message).width;
+            }
+            ctx.fillText(message, x, y - 55 + boardHeight / 2);
+        }
     }
 
     // Draws scenery objects like trees or flowers
@@ -1123,6 +1234,7 @@ function drawCrops(x, y) {
         // --- Draw Map and Objects ---
         // We draw objects in a separate pass to handle Z-ordering correctly
         const objectsToDraw = [];
+        let playerObject = null;
 
         for (let y = 0; y < MAP_ROWS; y++) {
             for (let x = 0; x < MAP_COLS; x++) {
@@ -1174,7 +1286,7 @@ function drawCrops(x, y) {
 
                 // Add objects to the draw queue
                 if (y === Math.floor(player.y) && x === Math.floor(player.x)) {
-                    objectsToDraw.push({type: 'player', iso});
+                    playerObject = {type: 'player', iso};
                 }
                 
                 if (tileType === 3) {
@@ -1184,7 +1296,12 @@ function drawCrops(x, y) {
                 } else if (tileType === 5) {
                     objectsToDraw.push({type: 'hut', iso});
                 } else if (tileType === 6) {
-                    objectsToDraw.push({type: 'sign', iso});
+                    let message = messages[6]; // Default message
+                    const interactiveSign = interactives.find(it => Math.floor(it.x) === x && Math.floor(it.y) === y);
+                    if (interactiveSign) {
+                        message = interactiveSign.message;
+                    }
+                    objectsToDraw.push({type: 'sign', iso, meta: { message }});
                 } else if (tileType === 9) {
                     objectsToDraw.push({type: 'circus', iso});
                 }
@@ -1229,9 +1346,6 @@ function drawCrops(x, y) {
 
         objectsToDraw.forEach(obj => {
             switch(obj.type) {
-                case 'player':
-                     drawPlayer(obj.iso.x, obj.iso.y);
-                     break;
                 case 'tree':
                     drawTree(obj.iso.x, obj.iso.y);
                     break;
@@ -1242,7 +1356,7 @@ function drawCrops(x, y) {
                     drawHut(obj.iso.x, obj.iso.y);
                     break;
                 case 'sign':
-                    drawSign(obj.iso.x, obj.iso.y);
+                    drawSign(obj.iso.x, obj.iso.y, obj.meta.message, 'post');
                     break;
                 case 'interactive':
                     // draw a small red square to represent the interactive object
@@ -1266,6 +1380,18 @@ function drawCrops(x, y) {
                     break;
             }
         });
+
+        // --- Second Pass: Draw sign boards on top of everything ---
+        objectsToDraw.forEach(obj => {
+            if (obj.type === 'sign') {
+                drawSign(obj.iso.x, obj.iso.y, obj.meta.message, 'board');
+            }
+        });
+
+        // --- Final Pass: Draw Player on top ---
+        if (playerObject) {
+            drawPlayer(playerObject.iso.x, playerObject.iso.y);
+        }
 
 
         ctx.restore();
@@ -1305,33 +1431,39 @@ function drawCrops(x, y) {
             return;
         }
         
-        const checkCoords = [
-            {x: player.x, y: player.y}, // Check current tile first
-            ...['Up', 'Down', 'Left', 'Right'].map(dir => getNextCoord(player.x, player.y, dir))
-        ];
-        
-        for (const coord of checkCoords) {
-            if (coord.x >= 0 && coord.x < MAP_COLS && coord.y >= 0 && coord.y < MAP_ROWS) {
-                // First check interactives at this coordinate
-                const foundInteractive = interactives.find(it => Math.floor(it.x) === Math.floor(coord.x) && Math.floor(it.y) === Math.floor(coord.y));
-                if (foundInteractive) {
-                    showMessage(foundInteractive.message);
-                    return;
-                }
+        // Build a list of nearby integer tile coords (3x3 around player) ordered by distance
+        const px = Math.floor(player.x);
+        const py = Math.floor(player.y);
+        const neighbors = [];
+        for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+                neighbors.push({ x: px + dx, y: py + dy, dist: Math.abs(dx) + Math.abs(dy) });
+            }
+        }
+        neighbors.sort((a,b) => a.dist - b.dist);
 
-                // Fallback to tile-based messages
-                const tileType = map[Math.floor(coord.y)][Math.floor(coord.x)];
-                if (messages[tileType]) {
-                    if (tileType === 6) {
-                        cinematicFocus = {
-                            player: { x: player.x, y: player.y },
-                            target: { x: coord.x, y: coord.y }
-                        };
-                        targetZoom = 2.5; // Zoom in
-                    }
-                    showMessage(messages[tileType]);
-                    return; // Show first message found and exit
-                }
+        for (const coord of neighbors) {
+            if (coord.x < 0 || coord.x >= MAP_COLS || coord.y < 0 || coord.y >= MAP_ROWS) continue;
+
+            const tileX = coord.x;
+            const tileY = coord.y;
+            const tileType = map[tileY][tileX];
+
+            // Prioritize signs
+            if (tileType === 6) {
+                const interactiveSign = interactives.find(it => Math.floor(it.x) === tileX && Math.floor(it.y) === tileY);
+                const message = interactiveSign ? interactiveSign.message : messages[6];
+                cinematicFocus = { player: { x: player.x, y: player.y }, target: { x: tileX, y: tileY } };
+                targetZoom = 2.5;
+                showMessage(message);
+                return;
+            }
+
+            // Check for other interactives (red squares)
+            const foundInteractive = interactives.find(it => Math.floor(it.x) === tileX && Math.floor(it.y) === tileY);
+            if (foundInteractive) {
+                showMessage(foundInteractive.message);
+                return;
             }
         }
     }
@@ -1435,10 +1567,85 @@ function drawCrops(x, y) {
         // Add zoom control listeners
         document.getElementById('zoomIn').addEventListener('click', zoomIn);
         document.getElementById('zoomOut').addEventListener('click', zoomOut);
-
         // Start the game loop
         render();
+
+        // DEBUG: print info about the sign the user reported at [29,31]
+        try {
+            const dbgX = 29, dbgY = 31;
+            if (dbgY >= 0 && dbgY < MAP_ROWS && dbgX >= 0 && dbgX < MAP_COLS) {
+                console.log('DEBUG: map[' + dbgY + '][' + dbgX + '] =', map[dbgY][dbgX]);
+                const it = interactives.find(o => Math.floor(o.x) === dbgX && Math.floor(o.y) === dbgY);
+                console.log('DEBUG: interactive at [29,31]:', it || 'none');
+            } else {
+                console.log('DEBUG: [29,31] outside map bounds');
+            }
+        } catch (e) {
+            console.error('DEBUG: error while checking tile', e);
+        }
+
+        // --- Mouse debug overlay (added helper) ---
+        (function addMouseDebugOverlay() {
+            // Helper: convert screen (client) coordinates -> map (tile) fractional coordinates
+            function screenToMap(screenX, screenY) {
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = screenX - rect.left;
+                const canvasY = screenY - rect.top;
+
+                // undo camera translation and zoom to get isometric world coords
+                const worldIsoX = (canvasX - camera.x) / zoom;
+                const worldIsoY = (canvasY - camera.y) / zoom;
+
+                const a = TILE_WIDTH / 2;
+                const b = TILE_HEIGHT / 2;
+
+                const mapX = (worldIsoX / a + worldIsoY / b) / 2;
+                const mapY = (worldIsoY / b - worldIsoX / a) / 2;
+
+                return { x: mapX, y: mapY };
+            }
+
+            const dbg = document.createElement('div');
+            dbg.id = 'debugTileCoords';
+            dbg.style.position = 'fixed';
+            dbg.style.right = '8px';
+            dbg.style.bottom = '8px';
+            dbg.style.padding = '6px 8px';
+            dbg.style.background = 'rgba(0,0,0,0.6)';
+            dbg.style.color = '#fff';
+            dbg.style.font = '12px monospace';
+            dbg.style.zIndex = 9999;
+            dbg.style.pointerEvents = 'none';
+            document.body.appendChild(dbg);
+
+            canvas.addEventListener('mousemove', (ev) => {
+                const m = screenToMap(ev.clientX, ev.clientY);
+                const ix = Math.floor(m.x);
+                const iy = Math.floor(m.y);
+                dbg.textContent = `map: (${m.x.toFixed(2)}, ${m.y.toFixed(2)})  tile: [${ix}, ${iy}]`;
+            });
+
+            canvas.addEventListener('click', (ev) => {
+                const m = screenToMap(ev.clientX, ev.clientY);
+                const ix = Math.floor(m.x);
+                const iy = Math.floor(m.y);
+                if (ix < 0 || ix >= MAP_COLS || iy < 0 || iy >= MAP_ROWS) {
+                    console.log('Clicked outside map');
+                    return;
+                }
+                const tileType = map[iy][ix];
+                console.log('Clicked tile coord:', ix, iy, 'tileType:', tileType);
+                if (messages[tileType]) {
+                    showMessage(messages[tileType]);
+                } else {
+                    const it = interactives.find(o => Math.floor(o.x) === ix && Math.floor(o.y) === iy);
+                    if (it) showMessage(it.message);
+                }
+            });
+        })();
     }
 
     init();
 });
+
+
