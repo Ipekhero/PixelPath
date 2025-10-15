@@ -31,9 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
         player.path = null;
         player.autoTarget = null;
         player.moveTimer = 0;
-        // hide button if present
-        const btn = document.getElementById('cancelAutopilotBtn');
-        if (btn) btn.style.display = 'none';
     }
 
     // Expose helper to window for console editing
@@ -57,50 +54,110 @@ document.addEventListener('DOMContentLoaded', () => {
             x: 29, y: 31, 
             message: 'EXPERIENCE',
             content: `
+                <h3>Professional Experience</h3>
                 <p>Welcome to my Experience section!</p>
                 <p>Here you can find information about my professional journey, roles, and accomplishments.</p>
                 <p><a href="https://linkedin.com" target="_blank">View my LinkedIn Profile</a></p>
+            `,
+            characterSVG: `
+                <svg width="150" height="150" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="35" y="15" width="30" height="25" fill="#0052A5"/>
+                    <rect x="40" y="20" width="20" height="15" fill="#FFFFFF"/>
+                    <rect x="35" y="45" width="30" height="35" fill="#0052A5"/>
+                    <rect x="32" y="50" width="36" height="6" fill="#FFFFFF"/>
+                    <rect x="30" y="60" width="12" height="25" fill="#0052A5"/>
+                    <rect x="58" y="60" width="12" height="25" fill="#0052A5"/>
+                    <rect x="42" y="55" width="4" height="4" fill="#FFFFFF"/>
+                    <rect x="54" y="55" width="4" height="4" fill="#FFFFFF"/>
+                </svg>
             `
         },
         { 
             x: 4, y: 8, 
             message: 'FUN',
             content: `
+                <h3>Fun & Hobbies</h3>
                 <p>This is the Fun Zone! 🎉</p>
                 <p>Discover my hobbies, interests, and side projects.</p>
+                <p>When I'm not coding, you'll find me exploring new technologies, playing games, or working on creative projects.</p>
+            `,
+            characterSVG: `
+                <svg width="150" height="150" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="35" y="15" width="30" height="25" fill="#0052A5"/>
+                    <rect x="40" y="20" width="20" height="15" fill="#FFFFFF"/>
+                    <rect x="43" y="23" width="4" height="4" fill="#0052A5"/>
+                    <rect x="53" y="23" width="4" height="4" fill="#0052A5"/>
+                    <rect x="43" y="30" width="14" height="3" fill="#0052A5"/>
+                    <rect x="35" y="45" width="30" height="35" fill="#0052A5"/>
+                    <rect x="30" y="60" width="12" height="25" fill="#0052A5"/>
+                    <rect x="58" y="60" width="12" height="25" fill="#0052A5"/>
+                    <rect x="47" y="8" width="6" height="8" fill="#FFFFFF"/>
+                    <rect x="44" y="10" width="12" height="3" fill="#FFFFFF"/>
+                </svg>
             `
         },
         { 
             x: 7, y: 33, 
             message: 'EDUCATION',
             content: `
-                <p>Education & Learning</p>
+                <h3>Education & Learning</h3>
                 <p>My academic background and continuous learning journey.</p>
+                <p>I believe in lifelong learning and constantly expanding my knowledge through courses, books, and hands-on projects.</p>
+            `,
+            characterSVG: `
+                <svg width="150" height="150" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="35" y="15" width="30" height="25" fill="#0052A5"/>
+                    <rect x="40" y="20" width="20" height="15" fill="#FFFFFF"/>
+                    <rect x="40" y="12" width="20" height="6" fill="#0052A5"/>
+                    <rect x="35" y="45" width="30" height="35" fill="#0052A5"/>
+                    <rect x="30" y="60" width="12" height="25" fill="#0052A5"/>
+                    <rect x="58" y="60" width="12" height="25" fill="#0052A5"/>
+                    <rect x="42" y="52" width="16" height="18" fill="#FFFFFF"/>
+                    <rect x="45" y="55" width="10" height="2" fill="#0052A5"/>
+                    <rect x="45" y="60" width="10" height="2" fill="#0052A5"/>
+                    <rect x="45" y="65" width="10" height="2" fill="#0052A5"/>
+                </svg>
             `
         },
         { 
             x: 46, y: 13, 
             message: 'PROJECTS',
             content: `
-                <p>Featured Projects</p>
+                <h3>Featured Projects</h3>
                 <p>Check out my portfolio of completed and ongoing projects.</p>
+                <p>From web applications to creative experiments, each project represents a learning journey and problem-solving adventure.</p>
                 <p><a href="#" target="_blank">View Projects Gallery</a></p>
+            `,
+            characterSVG: `
+                <svg width="150" height="150" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="35" y="15" width="30" height="25" fill="#0052A5"/>
+                    <rect x="40" y="20" width="20" height="15" fill="#FFFFFF"/>
+                    <rect x="35" y="45" width="30" height="35" fill="#0052A5"/>
+                    <rect x="30" y="60" width="12" height="25" fill="#0052A5"/>
+                    <rect x="58" y="60" width="12" height="25" fill="#0052A5"/>
+                    <rect x="20" y="50" width="20" height="15" fill="#FFFFFF"/>
+                    <rect x="22" y="52" width="16" height="11" fill="#0052A5"/>
+                    <rect x="24" y="54" width="4" height="3" fill="#FFFFFF"/>
+                    <rect x="30" y="54" width="4" height="3" fill="#FFFFFF"/>
+                </svg>
             `
         },
         { 
             x: 28, y: 7, 
             message: 'SKILLS',
             content: `
-                <p>Technical Skills & Expertise</p>
+                <h3>Technical Skills & Expertise</h3>
                 <p>Programming languages, frameworks, and tools I work with.</p>
+                <p>I'm proficient in modern web technologies and constantly exploring new tools and techniques to improve my craft.</p>
             `
         },
         { 
             x: 46, y: 23, 
             message: 'CERTIFICATES',
             content: `
-                <p>Certifications & Awards</p>
+                <h3>Certifications & Awards</h3>
                 <p>Professional certifications and recognitions.</p>
+                <p>View my collection of certificates from various online platforms and institutions.</p>
             `
         }
     ];
@@ -1561,16 +1618,42 @@ function drawCrops(x, y) {
         messageVisible = false;
     }
 
-    // Show sign popup with rich content
+    // Default SVG character for signs (8-bit style with blue and white)
+    // Colors: #0052A5 (blue), #FFFFFF (white)
+    const defaultCharacterSVG = `
+        <svg width="150" height="150" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="35" y="15" width="30" height="30" fill="#0052A5"/>
+            <rect x="40" y="20" width="20" height="20" fill="#FFFFFF"/>
+            <rect x="35" y="50" width="30" height="40" fill="#0052A5"/>
+            <rect x="30" y="60" width="10" height="30" fill="#0052A5"/>
+            <rect x="60" y="60" width="10" height="30" fill="#0052A5"/>
+        </svg>
+    `;
+
+    // Show sign popup with rich content using new detailed popup
     function showSignPopup(signData) {
-        // signData should have: title, content (HTML), images, links
+        // signData should have: title/message, content (HTML), characterSVG (optional)
         const title = signData.message || signData.title || 'Sign';
         const content = signData.content || `<p>${signData.message || ''}</p>`;
+        const characterSVG = signData.characterSVG || defaultCharacterSVG;
         
-        signPopupText.innerHTML = `<h2 style="margin-top:0; color:#0052A5; font-size:28px;">${title}</h2>${content}`;
+        // Get the new popup elements
+        const detailPopup = document.getElementById('signDetailPopup');
+        const detailHeader = document.getElementById('signDetailHeader');
+        const detailCharacter = document.getElementById('signDetailCharacter');
+        const detailText = document.getElementById('signDetailText');
         
-        overlay.style.display = 'block';
-        signPopup.style.display = 'block';
+        // Set the content
+        detailHeader.textContent = title;
+        detailCharacter.innerHTML = characterSVG;
+        detailText.innerHTML = content;
+        
+        // Show the popup with animation
+        detailPopup.style.display = 'flex';
+        setTimeout(() => {
+            detailPopup.classList.add('active');
+        }, 10);
+        
         messageVisible = true;
     }
 
@@ -1579,10 +1662,30 @@ function drawCrops(x, y) {
             cinematicFocus = null;
             targetZoom = computeFitZoom();
         }
+        
+        // Hide the new detailed popup
+        const detailPopup = document.getElementById('signDetailPopup');
+        detailPopup.classList.remove('active');
+        setTimeout(() => {
+            detailPopup.style.display = 'none';
+        }, 300);
+        
+        // Also hide old popup if it was visible
         overlay.style.display = 'none';
         signPopup.style.display = 'none';
         messageVisible = false;
     }
+
+    // Add event listener for the new close button
+    const signDetailCloseBtn = document.getElementById('signDetailClose');
+    signDetailCloseBtn.addEventListener('click', hideSignPopup);
+    
+    // Close on clicking outside the popup content
+    document.getElementById('signDetailPopup').addEventListener('click', (e) => {
+        if (e.target.id === 'signDetailPopup') {
+            hideSignPopup();
+        }
+    });
 
     closeSignPopupButton.addEventListener('click', hideSignPopup);
     overlay.addEventListener('click', hideSignPopup);
@@ -1836,28 +1939,6 @@ function drawCrops(x, y) {
         // Add zoom control listeners
         document.getElementById('zoomIn').addEventListener('click', zoomIn);
         document.getElementById('zoomOut').addEventListener('click', zoomOut);
-        // Create a small Cancel Autopilot button near the zoom controls
-        (function createCancelButton() {
-            let btn = document.getElementById('cancelAutopilotBtn');
-            if (!btn) {
-                btn = document.createElement('button');
-                btn.id = 'cancelAutopilotBtn';
-                btn.textContent = 'Cancel Autopilot (Esc)';
-                btn.style.position = 'fixed';
-                btn.style.right = '8px';
-                btn.style.top = '8px';
-                btn.style.zIndex = 9999;
-                btn.style.padding = '6px 10px';
-                btn.style.background = '#FF6B6B';
-                btn.style.color = '#fff';
-                btn.style.border = 'none';
-                btn.style.borderRadius = '4px';
-                btn.style.cursor = 'pointer';
-                btn.style.display = 'none';
-                document.body.appendChild(btn);
-                btn.addEventListener('click', cancelAutopilot);
-            }
-        })();
 
         // Escape key cancels autopilot
         window.addEventListener('keydown', (ev) => {
@@ -1934,16 +2015,33 @@ function drawCrops(x, y) {
                 const tileType = map[iy][ix];
                 console.log('Clicked tile coord:', ix, iy, 'tileType:', tileType);
 
+                // Helper function to check if click is near a sign (within 1.5 tiles)
+                const isNearSign = (signX, signY) => {
+                    const dx = m.x - signX;
+                    const dy = m.y - signY;
+                    return Math.sqrt(dx * dx + dy * dy) <= 1.5;
+                };
+
                 // If user clicked a sign or an interactive, start autopilot to it
-                const interactive = interactives.find(o => Math.floor(o.x) === ix && Math.floor(o.y) === iy);
+                // Check for nearby interactive objects (expanded clickable area)
+                let interactive = interactives.find(o => isNearSign(o.x, o.y));
                 const isSignTile = tileType === 6;
 
+                // If no interactive found nearby but current tile is a sign, find the exact sign
+                if (!interactive && isSignTile) {
+                    interactive = interactives.find(o => Math.floor(o.x) === ix && Math.floor(o.y) === iy);
+                }
+
                 if (isSignTile || interactive) {
+                    // Use the interactive's position if found, otherwise use clicked position
+                    const targetX = interactive ? Math.floor(interactive.x) : ix;
+                    const targetY = interactive ? Math.floor(interactive.y) : iy;
+                    
                     // Try direct path first
-                    let path = computePath(player.x, player.y, ix, iy);
+                    let path = computePath(player.x, player.y, targetX, targetY);
                     if (path === null) {
                         // Try to find nearest accessible approach tile
-                        path = findNearestAccessiblePath(player.x, player.y, ix, iy, 10);
+                        path = findNearestAccessiblePath(player.x, player.y, targetX, targetY, 10);
                     }
                     if (path === null) {
                         showMessage("No path to destination.");
@@ -1956,14 +2054,11 @@ function drawCrops(x, y) {
                     }
                     // Start autopilot
                     player.path = path;
-                    player.autoTarget = { x: ix, y: iy };
+                    player.autoTarget = { x: targetX, y: targetY };
                     player.moveTimer = 0;
                     // Switch view to player-centered follow
                     initialView = false;
-                    // show cancel button
-                    const cb = document.getElementById('cancelAutopilotBtn');
-                    if (cb) cb.style.display = 'block';
-                    console.log('Autopilot started to', ix, iy, 'steps:', path.length);
+                    console.log('Autopilot started to', targetX, targetY, 'steps:', path.length);
                     return;
                 }
 
