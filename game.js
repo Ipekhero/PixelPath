@@ -23,6 +23,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
+    // Cancel autopilot helper
+    function cancelAutopilot() {
+        if (player.path && player.path.length > 0) {
+            console.log('Autopilot cancelled');
+        }
+        player.path = null;
+        player.autoTarget = null;
+        player.moveTimer = 0;
+        // hide button if present
+        const btn = document.getElementById('cancelAutopilotBtn');
+        if (btn) btn.style.display = 'none';
+    }
+
     // Expose helper to window for console editing
     window.setSignText = setSignText;
 
@@ -239,6 +252,12 @@ document.addEventListener('DOMContentLoaded', () => {
         color: '#FF69B4', // Hot Pink
         shadowColor: 'rgba(0,0,0,0.3)'
     };
+
+    // autopilot path and movement timing
+    player.path = null; // array of {x,y} to follow
+    player.moveTimer = 0;
+    player.moveInterval = 120; // ms per tile
+    player.autoTarget = null;
 
     // --- Message Data ---
     let messages = {
@@ -1179,7 +1198,11 @@ function drawCrops(x, y) {
     }
 
     // --- Main Render Loop ---
-    function render() {
+    let lastTimestamp = 0;
+    function render(timestamp) {
+        if (!timestamp) timestamp = performance.now();
+        const dt = timestamp - (lastTimestamp || timestamp);
+        lastTimestamp = timestamp;
         // Clear screen
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1193,6 +1216,27 @@ function drawCrops(x, y) {
         // Smoothly adjust zoom towards target
         const zoomSpeed = 0.05;
         zoom += (targetZoom - zoom) * zoomSpeed;
+
+        // --- Auto-move handling: step along path at fixed intervals ---
+        if (player.path && player.path.length > 0 && !messageVisible && !cinematicFocus) {
+            player.moveTimer += dt;
+            // Only advance at most one tile per frame to avoid "skipping" many tiles during slow frames
+            if (player.moveTimer >= player.moveInterval && player.path && player.path.length > 0) {
+                player.moveTimer -= player.moveInterval;
+                const next = player.path.shift();
+                player.x = next.x;
+                player.y = next.y;
+                // arrived at destination
+                if (player.path.length === 0) {
+                    // clear autopilot target then trigger interaction
+                    player.autoTarget = null;
+                    // small delay before opening to allow camera to settle
+                    setTimeout(() => {
+                        handleInteraction();
+                    }, 120);
+                }
+            }
+        }
 
         // --- Draw and Update Clouds ---
         // Clouds are drawn in screen space, so we do this before the camera transform
@@ -1481,6 +1525,125 @@ function drawCrops(x, y) {
         return { x: nextX, y: nextY };
     }
 
+    // --- Pathfinding (BFS on the game's movement lattice) ---
+    // Movement allowed: the same four directions as player controls:
+    // Up: (-1,-1), Down: (+1,+1), Left: (-1,+1), Right: (+1,-1)
+    function computePath(startX, startY, goalX, goalY) {
+        const sX = Math.floor(startX);
+        const sY = Math.floor(startY);
+        const gX = Math.floor(goalX);
+        const gY = Math.floor(goalY);
+
+        // Quick short-circuit
+        if (sX === gX && sY === gY) return [];
+
+        const deltas = [
+            // 8-directional movement (cardinals + diagonals)
+            {dx: -1, dy: 0}, {dx: 1, dy: 0}, {dx: 0, dy: -1}, {dx: 0, dy: 1},
+            {dx: -1, dy: -1}, {dx: 1, dy: 1}, {dx: -1, dy: 1}, {dx: 1, dy: -1}
+        ];
+
+        function inBounds(x, y) {
+            return x >= 0 && x < MAP_COLS && y >= 0 && y < MAP_ROWS;
+        }
+
+        function isWalkable(x, y) {
+            if (!inBounds(x, y)) return false;
+            const t = map[y][x];
+            // Block water(2), tree(3), hut(5)
+            return !(t === 2 || t === 3 || t === 5);
+        }
+
+        const startKey = `${sX},${sY}`;
+        const goalKey = `${gX},${gY}`;
+
+        const queue = [{x: sX, y: sY}];
+        const cameFrom = {};
+        const visited = new Set([startKey]);
+
+        while (queue.length > 0) {
+            const cur = queue.shift();
+            const curKey = `${cur.x},${cur.y}`;
+
+            for (const d of deltas) {
+                const nx = cur.x + d.dx;
+                const ny = cur.y + d.dy;
+                const nKey = `${nx},${ny}`;
+
+                if (!inBounds(nx, ny)) continue;
+
+                // Allow stepping onto the goal even if normally non-walkable
+                if (nx === gX && ny === gY) {
+                    cameFrom[nKey] = curKey;
+                    // reconstruct path
+                    const path = [];
+                    let curTrace = nKey;
+                    while (curTrace && curTrace !== startKey) {
+                        const [cx, cy] = curTrace.split(',').map(Number);
+                        path.push({x: cx, y: cy});
+                        curTrace = cameFrom[curTrace];
+                    }
+                    path.reverse();
+                    return path;
+                }
+
+                if (visited.has(nKey)) continue;
+                if (!isWalkable(nx, ny)) continue;
+
+                visited.add(nKey);
+                cameFrom[nKey] = curKey;
+                queue.push({x: nx, y: ny});
+            }
+        }
+
+        // No path found
+        return null;
+    }
+
+    // Find a reachable path to the nearest walkable tile around (goalX,goalY)
+    function findNearestAccessiblePath(startX, startY, goalX, goalY, maxRadius = 8) {
+        const sX = Math.floor(startX);
+        const sY = Math.floor(startY);
+        const gX = Math.floor(goalX);
+        const gY = Math.floor(goalY);
+
+        function inBounds(x, y) {
+            return x >= 0 && x < MAP_COLS && y >= 0 && y < MAP_ROWS;
+        }
+        function isWalkableLocal(x, y) {
+            if (!inBounds(x, y)) return false;
+            const t = map[y][x];
+            return !(t === 2 || t === 3 || t === 5);
+        }
+
+        let bestPath = null;
+        let bestLen = Infinity;
+
+        for (let r = 0; r <= maxRadius; r++) {
+            // iterate square ring of radius r
+            for (let dx = -r; dx <= r; dx++) {
+                for (let dy = -r; dy <= r; dy++) {
+                    const x = gX + dx;
+                    const y = gY + dy;
+                    if (!inBounds(x, y)) continue;
+                    // only consider positions on the current ring
+                    if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+
+                    if (!isWalkableLocal(x, y)) continue;
+
+                    const path = computePath(sX, sY, x, y);
+                    if (path && path.length >= 0 && path.length < bestLen) {
+                        bestLen = path.length;
+                        bestPath = path;
+                    }
+                }
+            }
+            if (bestPath) return bestPath;
+        }
+
+        return null;
+    }
+
     // --- Controls ---
     function handleKeyDown(e) {
         if (e.key === ' ') { // Spacebar
@@ -1506,6 +1669,9 @@ function drawCrops(x, y) {
             if (targetTile !== 2 && targetTile !== 3 && targetTile !== 5) { // Cannot walk on water, trees, or huts. Signs are not solid.
                  player.x = nextX;
                  player.y = nextY;
+                 // Cancel any autopilot/path following when the player manually moves
+                 player.path = null;
+                 player.autoTarget = null;
                  // user moved — switch from initial full-map view to player-centered
                  initialView = false;
             }
@@ -1567,6 +1733,35 @@ function drawCrops(x, y) {
         // Add zoom control listeners
         document.getElementById('zoomIn').addEventListener('click', zoomIn);
         document.getElementById('zoomOut').addEventListener('click', zoomOut);
+        // Create a small Cancel Autopilot button near the zoom controls
+        (function createCancelButton() {
+            let btn = document.getElementById('cancelAutopilotBtn');
+            if (!btn) {
+                btn = document.createElement('button');
+                btn.id = 'cancelAutopilotBtn';
+                btn.textContent = 'Cancel Autopilot (Esc)';
+                btn.style.position = 'fixed';
+                btn.style.right = '8px';
+                btn.style.top = '8px';
+                btn.style.zIndex = 9999;
+                btn.style.padding = '6px 10px';
+                btn.style.background = '#FF6B6B';
+                btn.style.color = '#fff';
+                btn.style.border = 'none';
+                btn.style.borderRadius = '4px';
+                btn.style.cursor = 'pointer';
+                btn.style.display = 'none';
+                document.body.appendChild(btn);
+                btn.addEventListener('click', cancelAutopilot);
+            }
+        })();
+
+        // Escape key cancels autopilot
+        window.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Escape') {
+                cancelAutopilot();
+            }
+        });
         // Start the game loop
         render();
 
@@ -1635,11 +1830,45 @@ function drawCrops(x, y) {
                 }
                 const tileType = map[iy][ix];
                 console.log('Clicked tile coord:', ix, iy, 'tileType:', tileType);
+
+                // If user clicked a sign or an interactive, start autopilot to it
+                const interactive = interactives.find(o => Math.floor(o.x) === ix && Math.floor(o.y) === iy);
+                const isSignTile = tileType === 6;
+
+                if (isSignTile || interactive) {
+                    // Try direct path first
+                    let path = computePath(player.x, player.y, ix, iy);
+                    if (path === null) {
+                        // Try to find nearest accessible approach tile
+                        path = findNearestAccessiblePath(player.x, player.y, ix, iy, 10);
+                    }
+                    if (path === null) {
+                        showMessage("No path to destination.");
+                        return;
+                    }
+                    if (path.length === 0) {
+                        // Already standing on the tile - open immediately
+                        handleInteraction();
+                        return;
+                    }
+                    // Start autopilot
+                    player.path = path;
+                    player.autoTarget = { x: ix, y: iy };
+                    player.moveTimer = 0;
+                    // Switch view to player-centered follow
+                    initialView = false;
+                    // show cancel button
+                    const cb = document.getElementById('cancelAutopilotBtn');
+                    if (cb) cb.style.display = 'block';
+                    console.log('Autopilot started to', ix, iy, 'steps:', path.length);
+                    return;
+                }
+
+                // Fallback: show general messages for other tile types
                 if (messages[tileType]) {
                     showMessage(messages[tileType]);
                 } else {
-                    const it = interactives.find(o => Math.floor(o.x) === ix && Math.floor(o.y) === iy);
-                    if (it) showMessage(it.message);
+                    if (interactive) showMessage(interactive.message);
                 }
             });
         })();
