@@ -3,19 +3,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     const messageBox = document.getElementById('messageBox');
     const messageText = document.getElementById('messageText');
+    const overlay = document.getElementById('overlay');
+    const signPopup = document.getElementById('signPopup');
+    const signPopupText = document.getElementById('signPopupText');
+    const closeSignPopupButton = document.getElementById('closeSignPopup');
 
     // --- Game Configuration ---
     const TILE_WIDTH = 64;
     const TILE_HEIGHT = TILE_WIDTH / 2;
     let zoom = 1.0;
     let messageVisible = false;
+    let cinematicFocus = null; // Stores {player, target} for cinematic zoom
+    let targetZoom = 1.0;
     let initialView = true; // true at start: show entire map fitted to canvas
 
     // --- Map Data ---
     // Tile legend:
     // 0: Grass, 1: Path, 2: Water, 3: Tree, 4: Flowers, 5: Hut, 6: Sign,
-    // 7: Crops, 8: Industry, 9: Circus
-                                // Single explicit 60x60 map with the small map centered at offsets (15, 15)
+    // 7: Crops, 8: Education, 9: Circus
                                 const map = [
     // rows 0..14: top padding (60 zeros each)
     [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
@@ -26,47 +31,47 @@ document.addEventListener('DOMContentLoaded', () => {
     [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
     [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
     [9,9,9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,6,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,7,7,7,7,7,7,1,1,1,1,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,6,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,7,7,7,7,7,7,1,1,1,1,7,7,7,7,7,7,7,7,7,7,7],
     // row15 -> start of centered small map
-    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,7,7,7,7,7,1,1,1,1,1,1,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,7,7,7,7,7,1,6,1,1,6,1,7,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,5,1,5,1,5,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,7,7,7,7],
-    [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,4,0,0,0,0,0,0,1,3,3,3,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [9,9,9,9,9,9,9,9,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,7,7,7,7,7,1,1,1,1,1,1,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,7,7,7,7,7,1,6,1,1,6,1,7,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,5,1,5,1,5,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,7,7,7,7,7,7,7,7,7],
+    [9,9,9,9,9,9,9,9,1,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,1,3,3,3,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
     [9,9,9,9,9,9,9,9,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,5,1,5,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,4,1,4,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,8,8,8,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,2,2,2,8,1,1,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,8,8,8,8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
     // rows 31..44: continue centered smallMap rows
-    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
-    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,3,0,0,3,0,0,0,0,0,0,0],
-    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,3,0,0,0,3,0,0,0,0],
-    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [8,8,8,8,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [8,8,8,8,8,8,8,8,6,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2],
+    [8,8,8,2,2,2,2,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,3,0,0,3,0,0,0,0,0,0,0],
+    [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,3,0,0,0,3,0,0,0,0],
+    [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [8,8,8,2,8,8,8,8,1,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [8,8,8,2,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     // rows 45..59 bottom padding (all zeros)
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
-    [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3]
+    [8,8,8,2,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
+    [8,8,8,2,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
+    [8,8,8,2,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
+    [8,8,8,2,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
+    [8,8,8,2,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
+    [8,8,8,2,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
+    [8,8,8,2,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
+    [8,8,8,2,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0],
+    [8,8,8,2,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3]
 ];
 
     // --- Overlay: central path and city ---
@@ -83,8 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // NOTE: removed global center cross (vertical/horizontal paths) so the
         // map's literal content remains authoritative.
 
-        // City layout parameters
-        const cityRadius = 2; // creates a 5x5 block
+        // City layout parameters - increased radius for more space
+        const cityRadius = 3; // creates a 7x7 block
         const cityMinX = centerX - cityRadius;
         const cityMaxX = centerX + cityRadius;
         const cityMinY = centerY - cityRadius;
@@ -104,10 +109,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Place buildings in the four corners of the 5x5 block and small plazas
         const buildingCoords = [
+            // Corners
             {x: cityMinX, y: cityMinY},
             {x: cityMaxX, y: cityMinY},
             {x: cityMinX, y: cityMaxY},
-            {x: cityMaxX, y: cityMaxY}
+            {x: cityMaxX, y: cityMaxY},
+            // Mid-points
+            {x: cityMinX, y: centerY}, // This will be replaced by the path, so it's a placeholder for spacing
+            {x: cityMaxX, y: centerY}, // This will be replaced by the path
+            {x: centerX, y: cityMinY}, // This will be replaced by the path
+            {x: centerX, y: cityMaxY}  // This will be replaced by the path
         ];
 
         for (const b of buildingCoords) {
@@ -161,19 +172,85 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- Message Data ---
-    const messages = {
+    let messages = {
         5: "A cozy-looking hut. The door is locked.",
         6: "The sign reads: 'Welcome to Pixel Valley!'"
     };
-
+    
     // Messages for new tile types
     messages[7] = "Fields of crops sway in the breeze.";
-    messages[8] = "Industrial area: factories hum with activity.";
+    messages[8] = "Education district: The quiet hum of learning fills the air.";
     messages[9] = "Circus: bright tents and lively music can be heard.";
 
-    // --- Tractor Data ---
-    const tractors = [];
-    const NUM_TRACTORS = 3;
+    (function createSchoolCampus() {
+        // Find the center of the education area to build the campus.
+        const eduTiles = [];
+        for (let y = 0; y < MAP_ROWS; y++) {
+            for (let x = 0; x < MAP_COLS; x++) {
+                if (map[y][x] === 8) {
+                    eduTiles.push({x, y});
+                }
+            }
+        }
+
+        if (eduTiles.length === 0) return; // No education area found.
+
+        // Find the geometric center of the main education block.
+        const centerX = Math.floor(eduTiles.reduce((sum, t) => sum + t.x, 0) / eduTiles.length);
+        const centerY = Math.floor(eduTiles.reduce((sum, t) => sum + t.y, 0) / eduTiles.length);
+
+        // Place a new sign for the university at the center.
+        map[centerY][centerX] = 6; // Place a sign tile.
+        interactives.push({x: centerX, y: centerY, message: "Pixel Valley University: Est. 2024"});
+
+        // Define the campus area around the new sign.
+        const radius = 4;
+        const startX = centerX - radius;
+        const startY = centerY - radius;
+        const endX = centerX + radius;
+        const endY = centerY + radius;
+
+        // Replace surrounding tiles with grass and paths
+        for (let y = startY; y <= endY; y++) {
+            for (let x = startX; x <= endX; x++) {
+                if (y >= 0 && y < MAP_ROWS && x >= 0 && x < MAP_COLS) {
+                    // Don't overwrite the sign we just placed.
+                    if (x === centerX && y === centerY) continue;
+
+                    // Create a circular path within the campus
+                    const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+                    if (dist > radius - 1.5 && dist < radius - 0.5) {
+                        map[y][x] = 1; // Path
+                    } else {
+                        map[y][x] = 0; // Grass
+                    }
+                }
+            }
+        }
+
+        // Place a few "school buildings" (huts) on the new campus grounds.
+        map[centerY - 2][centerX - 2] = 5;
+        map[centerY - 2][centerX + 2] = 5;
+        map[centerY + 2][centerX - 2] = 5;
+        map[centerY + 2][centerX + 2] = 5;
+    })();
+
+    // --- Wind Turbine Data ---
+    const windTurbines = [];
+
+
+    // --- Procedural Decoration Data ---
+    const randomFlowers = [];
+    const FLOWER_DENSITY = 0.025; // 2.5% chance for a flower on any given grass tile
+
+    // --- Ferris Wheel Data ---
+    let ferrisWheel = null;
+    const industrialBuildings = [];
+
+    // --- Flag Data ---
+    const flags = [];
+
+
 
     // --- Camera ---
     const camera = {
@@ -193,6 +270,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 size: 40 + Math.random() * 50,
                 speed: 0.1 + Math.random() * 0.2
             });
+        }
+    }
+
+    function initFlags() {
+        const centerX = Math.floor(MAP_COLS / 2);
+        const centerY = Math.floor(MAP_ROWS / 2);
+        const cityRadius = 3;
+        // Place a flag at one of the city entrances
+        // Place the flag in the top-left plaza of the city center.
+        flags.push({ x: centerX - 2, y: centerY - 2, type: 'zurich' });
+    }
+
+    function initRandomFlowers() {
+        for (let y = 0; y < MAP_ROWS; y++) {
+            for (let x = 0; x < MAP_COLS; x++) {
+                // Only place on grass tiles
+                if (map[y][x] === 0) {
+                    if (Math.random() < FLOWER_DENSITY) {
+                        randomFlowers.push({ x, y });
+                    }
+                }
+            }
         }
     }
 
@@ -259,39 +358,156 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function initTractors() {
-        const cropTiles = [];
+    function initFerrisWheel() {
+        const circusTiles = [];
         for (let y = 0; y < MAP_ROWS; y++) {
             for (let x = 0; x < MAP_COLS; x++) {
-                if (map[y][x] === 7) {
-                    cropTiles.push({ x, y });
+                if (map[y][x] === 9) {
+                    circusTiles.push({ x, y });
                 }
             }
         }
 
-        if (cropTiles.length === 0) return;
+        if (circusTiles.length === 0) return;
 
-        for (let i = 0; i < NUM_TRACTORS; i++) {
-            const startTile = cropTiles[Math.floor(Math.random() * cropTiles.length)];
-            const directions = [
-                { dx: -1, dy: -1 }, // Up
-                { dx: 1, dy: 1 },   // Down
-                { dx: -1, dy: 1 },  // Left
-                { dx: 1, dy: -1 }   // Right
-            ];
-            tractors.push({
-                x: startTile.x,
-                y: startTile.y,
-                speed: 0.02 + Math.random() * 0.02,
-                dir: directions[Math.floor(Math.random() * directions.length)],
-                color: '#e65100' // Bright orange
-            });
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        circusTiles.forEach(tile => {
+            if (tile.x < minX) minX = tile.x;
+            if (tile.y < minY) minY = tile.y;
+            if (tile.x > maxX) maxX = tile.x;
+            if (tile.y > maxY) maxY = tile.y;
+        });
+
+        const centerX = minX + (maxX - minX) / 2;
+        const centerY = minY + (maxY - minY) / 2;
+
+        ferrisWheel = { x: centerX, y: centerY };
+    }
+
+    function drawFerrisWheel(x, y) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        const radius = 120;
+        const numCabins = 10;
+        const cabinColors = ['#FF1493', '#00BFFF', '#FFD700', '#ADFF2F', '#FF4500'];
+        const structureColor = '#FFFACD';
+
+        // Draw support structure
+        ctx.strokeStyle = structureColor;
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        ctx.moveTo(0, TILE_HEIGHT);
+        ctx.lineTo(-radius * 0.6, -radius * 0.8);
+        ctx.moveTo(0, TILE_HEIGHT);
+        ctx.lineTo(radius * 0.6, -radius * 0.8);
+        ctx.stroke();
+
+        // Draw the wheel spokes
+        const time = Date.now();
+        const angleOffset = (time / 10000) * Math.PI * 2;
+        for (let i = 0; i < numCabins; i++) {
+            const angle = (i / numCabins) * Math.PI * 2 + angleOffset;
+            const cabinX = Math.cos(angle) * radius;
+            const cabinY = Math.sin(angle) * radius - radius;
+            ctx.fillStyle = cabinColors[i % cabinColors.length];
+            ctx.fillRect(cabinX - 10, cabinY - 10, 20, 20);
+        }
+        ctx.restore();
+    }
+
+    function initWindTurbines() {
+        const eduTiles = [];
+        for (let y = 0; y < MAP_ROWS; y++) {
+            for (let x = 0; x < MAP_COLS; x++) {
+                if (map[y][x] === 8) {
+                    eduTiles.push({x, y});
+                }
+            }
+        }
+
+        if (eduTiles.length > 0) {
+            let cornerTile = eduTiles[0];
+            // Find the top-left most tile of the education area
+            for (const tile of eduTiles) {
+                if (tile.x < cornerTile.x) {
+                    cornerTile = tile;
+                } else if (tile.x === cornerTile.x && tile.y < cornerTile.y) {
+                    cornerTile = tile;
+                }
+            }
+            // Place multiple turbines along the corner edge, each with a random rotation offset.
+            const numTurbines = 6;
+            for (let i = 0; i < numTurbines; i++) {
+                // Place turbines vertically along the corner, spaced out.
+                windTurbines.push({
+                    x: cornerTile.x + 1,
+                    y: cornerTile.y + 1 + (i * 4), // Increased spacing
+                    rotationOffset: Math.random() * Math.PI * 2
+                });
+            }
         }
     }
 
-    function findNewTractorDirection(tractor) {
-        const directions = [{ dx: -1, dy: -1 }, { dx: 1, dy: 1 }, { dx: -1, dy: 1 }, { dx: 1, dy: -1 }];
-        tractor.dir = directions[Math.floor(Math.random() * directions.length)];
+    function drawWindTurbine(x, y, turbineData) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        const poleHeight = 120; // Made slightly smaller
+        const poleColor = '#E0E0E0';
+        const bladeColor = '#FFFFFF';
+        const bladeLength = 65; // Made slightly smaller
+
+        // Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.beginPath();
+        ctx.ellipse(0, TILE_HEIGHT, 15, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Pole
+        ctx.fillStyle = poleColor;
+        ctx.fillRect(-5, -poleHeight + TILE_HEIGHT, 10, poleHeight);
+
+        // Blades
+        ctx.translate(0, -poleHeight + TILE_HEIGHT); // Move to top of pole
+        const time = Date.now();
+        const baseAngle = (time / 4000) * Math.PI * 2; // Slower, smoother rotation
+        ctx.rotate(baseAngle + (turbineData.rotationOffset || 0));
+
+        ctx.fillStyle = bladeColor;
+        ctx.strokeStyle = '#BDBDBD';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 3; i++) { // Draw 3 blades
+            ctx.fillRect(0, -5, bladeLength, 10); // Draw the blade
+            ctx.strokeRect(0, -5, bladeLength, 10);
+            ctx.rotate((Math.PI * 2) / 3); // Rotate for the next blade
+        }
+
+        ctx.restore();
+    }
+
+    function drawEducationTile(x, y) {
+        // Base color for the tile
+        drawTile(x, y, '#CD853F'); // Peru - a reddish-brown for mortar
+
+        ctx.save();
+        ctx.translate(x, y);
+
+        // Draw a brick pattern
+        const brickColor = '#A0522D'; // Sienna
+        const brickWidth = TILE_WIDTH / 4;
+        const brickHeight = TILE_HEIGHT / 4;
+
+        ctx.fillStyle = brickColor;
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                const offsetX = (j % 2) * (brickWidth / 2);
+                const isoX = (i - j) * (brickWidth / 2) - TILE_WIDTH / 2 + offsetX;
+                const isoY = (i + j) * (brickHeight / 2) - TILE_HEIGHT / 2;
+                ctx.fillRect(isoX, isoY, brickWidth * 0.9, brickHeight * 0.8);
+            }
+        }
+        ctx.restore();
     }
 
     // --- Utility Functions ---
@@ -529,6 +745,44 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fill();
     }
 
+    function drawFlag(x, y, type) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        const poleHeight = 120;
+        const poleColor = '#C0C0C0'; // Silver
+        const flagWidth = 50;
+        const flagHeight = 32;
+
+        // Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.beginPath();
+        ctx.ellipse(0, TILE_HEIGHT, 8, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Pole
+        ctx.fillStyle = poleColor;
+        ctx.fillRect(-2, -poleHeight + TILE_HEIGHT, 4, poleHeight);
+
+        // Flag
+        const flagY = -poleHeight + TILE_HEIGHT;
+        if (type === 'zurich') {
+            // Draw the full white rectangle first
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, flagY, flagWidth, flagHeight);
+
+            // Then draw the blue top-left triangle over it
+            ctx.fillStyle = '#0052A5'; // Zurich Blue
+            ctx.beginPath();
+            ctx.moveTo(0, flagY);
+            ctx.lineTo(flagWidth, flagY);
+            ctx.lineTo(0, flagY + flagHeight);
+            ctx.closePath();
+            ctx.fill();
+        }
+        ctx.restore();
+    }
+
     // Draws a bridge tile over water
     function drawBridge(x, y, mapX, mapY) {
         // First, draw the water underneath
@@ -572,6 +826,40 @@ document.addEventListener('DOMContentLoaded', () => {
             postSize, 
             postSize * 2.5
         );
+        ctx.restore();
+    }
+
+    // Draws a patch of colorful flowers
+    function drawFlowers(x, y) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        const flowerColors = ['#FF6347', '#4169E1', '#FFD700']; // Tomato, RoyalBlue, Gold
+        const stemColor = '#2E8B57'; // SeaGreen
+        const positions = [
+            { dx: -8, dy: 0, size: 5 },
+            { dx: 2, dy: 5, size: 6 },
+            { dx: 10, dy: -2, size: 5.5 }
+        ];
+
+        // Shadow for the patch
+        ctx.fillStyle = 'rgba(0,0,0,0.1)';
+        ctx.beginPath();
+        ctx.ellipse(0, TILE_HEIGHT, 18, 9, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        positions.forEach((pos, index) => {
+            // Stem
+            ctx.fillStyle = stemColor;
+            ctx.fillRect(pos.dx - 1, pos.dy, 2, TILE_HEIGHT);
+
+            // Petals (as a simple circle)
+            ctx.fillStyle = flowerColors[index % flowerColors.length];
+            ctx.beginPath();
+            ctx.arc(pos.dx, pos.dy, pos.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
         ctx.restore();
     }
 
@@ -630,42 +918,6 @@ function drawCrops(x, y) {
     ctx.restore();
 }
 
-    // Draws a small factory/industry building
-    function drawFactory(x, y) {
-        ctx.save();
-        ctx.translate(x, y);
-
-        const stoneColors = ['#FF6347', '#FFD700', '#00BFFF', '#EE82EE']; // Tomato, Gold, DeepSkyBlue, Violet
-        const numStones = 10;
-
-        for (let i = 0; i < numStones; i++) {
-            const stoneSizeX = 8 + (i % 5) * 2; // Deterministic size based on index
-            const stoneSizeY = 4 + (i % 3) * 1.5; // Deterministic size based on index
-
-            // Deterministic position within the tile bounds
-            const px = (i * 5 % TILE_WIDTH / 2) - TILE_WIDTH / 4;
-            const py = (i * 3 % TILE_HEIGHT / 2) - TILE_HEIGHT / 4;
-
-            ctx.fillStyle = stoneColors[i % stoneColors.length];
-
-            // Draw a small rhombus for each stone
-            ctx.beginPath();
-            ctx.moveTo(px, py - stoneSizeY / 2);
-            ctx.lineTo(px + stoneSizeX / 2, py);
-            ctx.lineTo(px, py + stoneSizeY / 2);
-            ctx.lineTo(px - stoneSizeX / 2, py);
-            ctx.closePath();
-            ctx.fill();
-
-            // Add a border for definition
-            ctx.strokeStyle = shadeColor(ctx.fillStyle, -20);
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-        }
-
-        ctx.restore();
-    }
-
     // Draws a circus tent
     function drawCircus(x, y) {
         ctx.save();
@@ -703,34 +955,6 @@ function drawCrops(x, y) {
         ctx.restore();
     }
     
-    // Draws a simple tractor
-    function drawTractor(x, y, color) {
-        ctx.save();
-        ctx.translate(x, y);
-
-        const bodyWidth = 40;
-        const bodyHeight = 24;
-        const wheelRadius = 10;
-
-        // Shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.25)';
-        ctx.beginPath();
-        ctx.ellipse(0, TILE_HEIGHT, bodyWidth * 0.8, bodyWidth * 0.4, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Wheels (draw first to be behind body)
-        ctx.fillStyle = '#212121';
-        ctx.beginPath();
-        ctx.arc(-bodyWidth / 2 + 2, TILE_HEIGHT - wheelRadius / 2, wheelRadius, 0, Math.PI * 2); // Back wheel
-        ctx.arc(bodyWidth / 2 - 2, TILE_HEIGHT - wheelRadius / 2, wheelRadius * 0.8, 0, Math.PI * 2); // Front wheel
-        ctx.fill();
-
-        // Body
-        ctx.fillStyle = color;
-        ctx.fillRect(-bodyWidth / 2, TILE_HEIGHT - bodyHeight, bodyWidth, bodyHeight);
-        ctx.restore();
-    }
-
     // Draws the player character
     function drawPlayer(isoX, isoY) {
         // Player shadow
@@ -855,6 +1079,10 @@ function drawCrops(x, y) {
         ctx.fillStyle = skyGradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+        // Smoothly adjust zoom towards target
+        const zoomSpeed = 0.05;
+        zoom += (targetZoom - zoom) * zoomSpeed;
+
         // --- Draw and Update Clouds ---
         // Clouds are drawn in screen space, so we do this before the camera transform
         clouds.forEach(cloud => {
@@ -867,32 +1095,24 @@ function drawCrops(x, y) {
             drawCloud(cloud.x, cloud.y, cloud.size);
         });
 
-        // --- Update Tractors ---
-        tractors.forEach(tractor => {
-            let nextX = tractor.x + tractor.dir.dx * tractor.speed;
-            let nextY = tractor.y + tractor.dir.dy * tractor.speed;
-
-            // Check bounds and if the next tile is still a crop tile
-            if (nextX >= 0 && nextX < MAP_COLS && nextY >= 0 && nextY < MAP_ROWS && map[Math.floor(nextY)][Math.floor(nextX)] === 7) {
-                tractor.x = nextX;
-                tractor.y = nextY;
-            } else {
-                // If it hits a boundary or non-crop tile, find a new direction
-                findNewTractorDirection(tractor);
-            }
-        });
-
-
         ctx.save();
 
         // Center camera: if initialView is true, center on map and keep the fit zoom
-        const playerIso = toIsometric(player.x, player.y);
-        if (initialView) {
+        if (cinematicFocus) {
+            // Center camera between player and the sign for cinematic effect
+            const midX = (cinematicFocus.player.x + cinematicFocus.target.x) / 2;
+            const midY = (cinematicFocus.player.y + cinematicFocus.target.y) / 2;
+            const midIso = toIsometric(midX, midY);
+            camera.x = canvas.width / 2 - midIso.x * zoom;
+            camera.y = canvas.height / 2 - midIso.y * zoom;
+        } else if (initialView) {
             // center on map midpoint
             const centerIso = toIsometric((MAP_COLS - 1) / 2, (MAP_ROWS - 1) / 2);
             camera.x = canvas.width / 2 - centerIso.x * zoom;
             camera.y = canvas.height / 2 - centerIso.y * zoom;
         } else {
+            // Center on player
+            const playerIso = toIsometric(player.x, player.y);
             camera.x = canvas.width / 2 - playerIso.x * zoom;
             camera.y = canvas.height / 2 - playerIso.y * zoom;
         }
@@ -937,8 +1157,8 @@ function drawCrops(x, y) {
                         drawTile(iso.x, iso.y, '#DEB887'); // Draw base soil
                         drawCrops(iso.x, iso.y); // Draw the crop details on top
                         break;
-                    case 8: // Industry
-                        drawTile(iso.x, iso.y, '#B0C4DE'); // LightSteelBlue base
+                    case 8: // Education
+                        drawEducationTile(iso.x, iso.y);
                         break;
                     case 9: // Circus
                         drawTile(iso.x, iso.y, '#FFDAB9'); // PeachPuff base
@@ -965,8 +1185,6 @@ function drawCrops(x, y) {
                     objectsToDraw.push({type: 'hut', iso});
                 } else if (tileType === 6) {
                     objectsToDraw.push({type: 'sign', iso});
-                } else if (tileType === 8) {
-                    objectsToDraw.push({type: 'factory', iso});
                 } else if (tileType === 9) {
                     objectsToDraw.push({type: 'circus', iso});
                 }
@@ -979,10 +1197,31 @@ function drawCrops(x, y) {
             objectsToDraw.push({type: 'interactive', iso, meta: it});
         }
         
-        // Add tractors to draw queue
-        for (const tractor of tractors) {
-            const iso = toIsometric(tractor.x, tractor.y);
-            objectsToDraw.push({type: 'tractor', iso, meta: tractor});
+        // Add the ferris wheel to the draw queue
+        if (ferrisWheel) {
+            const iso = toIsometric(ferrisWheel.x, ferrisWheel.y);
+            objectsToDraw.push({type: 'ferrisWheel', iso});
+        }
+
+        // Add wind turbines to draw queue
+        for (const turbine of windTurbines) {
+            const iso = toIsometric(turbine.x, turbine.y);
+            objectsToDraw.push({type: 'windTurbine', iso, meta: turbine});
+        }
+
+        // Add random flowers to draw queue
+        for (const flower of randomFlowers) {
+            const iso = toIsometric(flower.x, flower.y);
+            // Adjust for hill height so flowers sit on top of hills
+            const height = heightMap[flower.y] ? (heightMap[flower.y][flower.x] || 0) : 0;
+            iso.y -= height * (TILE_HEIGHT / 2);
+            objectsToDraw.push({type: 'flower', iso});
+        }
+
+        // Add flags to draw queue
+        for (const flag of flags) {
+            const iso = toIsometric(flag.x, flag.y);
+            objectsToDraw.push({type: 'flag', iso, meta: flag});
         }
 
         // --- Draw Objects and Player (sorted by Y for correct overlap) ---
@@ -997,7 +1236,7 @@ function drawCrops(x, y) {
                     drawTree(obj.iso.x, obj.iso.y);
                     break;
                 case 'flower':
-                    drawObject(obj.iso.x, obj.iso.y, '#FFD700', 10, 5); // Gold
+                    drawFlowers(obj.iso.x, obj.iso.y);
                     break;
                 case 'hut':
                     drawHut(obj.iso.x, obj.iso.y);
@@ -1013,20 +1252,34 @@ function drawCrops(x, y) {
                     ctx.fillRect(-6, -6, 12, 12);
                     ctx.restore();
                     break;
-                case 'factory':
-                    drawFactory(obj.iso.x, obj.iso.y);
-                    break;
                 case 'circus':
                     drawCircus(obj.iso.x, obj.iso.y);
                     break;
-                case 'tractor':
-                    drawTractor(obj.iso.x, obj.iso.y, obj.meta.color);
+                case 'ferrisWheel':
+                    drawFerrisWheel(obj.iso.x, obj.iso.y);
+                    break;
+                case 'windTurbine':
+                    drawWindTurbine(obj.iso.x, obj.iso.y, obj.meta);
+                    break;
+                case 'flag':
+                    drawFlag(obj.iso.x, obj.iso.y, obj.meta.type);
                     break;
             }
         });
 
 
         ctx.restore();
+
+        // If a message is visible, draw a semi-transparent cloud layer over the game world
+        if (messageVisible) {
+            // This is drawn in screen space, after the game world is rendered.
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'; // A white-ish overlay to make clouds pop
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            clouds.forEach(cloud => {
+                drawCloud(cloud.x, cloud.y, cloud.size * 1.5); // Draw slightly larger clouds
+            });
+        }
+
         requestAnimationFrame(render);
     }
 
@@ -1038,6 +1291,10 @@ function drawCrops(x, y) {
     }
 
     function hideMessage() {
+        if (cinematicFocus) {
+            cinematicFocus = null;
+            targetZoom = computeFitZoom(); // Or whatever the previous zoom was
+        }
         messageBox.style.display = 'none';
         messageVisible = false;
     }
@@ -1049,10 +1306,8 @@ function drawCrops(x, y) {
         }
         
         const checkCoords = [
-            {x: player.x - 1, y: player.y - 1}, // Up
-            {x: player.x + 1, y: player.y + 1}, // Down
-            {x: player.x - 1, y: player.y + 1}, // Left
-            {x: player.x + 1, y: player.y - 1}  // Right
+            {x: player.x, y: player.y}, // Check current tile first
+            ...['Up', 'Down', 'Left', 'Right'].map(dir => getNextCoord(player.x, player.y, dir))
         ];
         
         for (const coord of checkCoords) {
@@ -1067,6 +1322,13 @@ function drawCrops(x, y) {
                 // Fallback to tile-based messages
                 const tileType = map[Math.floor(coord.y)][Math.floor(coord.x)];
                 if (messages[tileType]) {
+                    if (tileType === 6) {
+                        cinematicFocus = {
+                            player: { x: player.x, y: player.y },
+                            target: { x: coord.x, y: coord.y }
+                        };
+                        targetZoom = 2.5; // Zoom in
+                    }
                     showMessage(messages[tileType]);
                     return; // Show first message found and exit
                 }
@@ -1074,6 +1336,18 @@ function drawCrops(x, y) {
         }
     }
 
+
+    function getNextCoord(currentX, currentY, direction) {
+        let nextX = currentX;
+        let nextY = currentY;
+        switch (direction) {
+            case 'Up': nextX -= 1; nextY -= 1; break;
+            case 'Down': nextX += 1; nextY += 1; break;
+            case 'Left': nextX -= 1; nextY += 1; break;
+            case 'Right': nextX += 1; nextY -= 1; break;
+        }
+        return { x: nextX, y: nextY };
+    }
 
     // --- Controls ---
     function handleKeyDown(e) {
@@ -1083,36 +1357,21 @@ function drawCrops(x, y) {
             return;
         }
 
-        if (messageVisible) return; // Don't move if message is open
+        if (messageVisible) return; // Don't move if any message is open
 
-        let nextX = player.x;
-        let nextY = player.y;
+        const directionMap = {
+            'ArrowUp': 'Up', 'ArrowDown': 'Down',
+            'ArrowLeft': 'Left', 'ArrowRight': 'Right'
+        };
+        const direction = directionMap[e.key];
+        if (!direction) return;
 
-        switch (e.key) {
-            case 'ArrowUp':
-                nextX -= 1;
-                nextY -= 1;
-                break;
-            case 'ArrowDown':
-                nextX += 1;
-                nextY += 1;
-                break;
-            case 'ArrowLeft':
-                nextX -= 1;
-                nextY += 1;
-                break;
-            case 'ArrowRight':
-                nextX += 1;
-                nextY -= 1;
-                break;
-            default:
-                return;
-        }
+        const { x: nextX, y: nextY } = getNextCoord(player.x, player.y, direction);
         
         // Collision Detection
         if (nextX >= 0 && nextX < MAP_COLS && nextY >= 0 && nextY < MAP_ROWS) {
             const targetTile = map[Math.floor(nextY)][Math.floor(nextX)];
-            if (targetTile !== 2 && targetTile !== 3 && targetTile !== 5 && targetTile !== 6) { // Cannot walk on water, trees, huts, signs
+            if (targetTile !== 2 && targetTile !== 3 && targetTile !== 5) { // Cannot walk on water, trees, or huts. Signs are not solid.
                  player.x = nextX;
                  player.y = nextY;
                  // user moved — switch from initial full-map view to player-centered
@@ -1131,10 +1390,12 @@ function drawCrops(x, y) {
     // --- Zoom Controls ---
     function zoomIn() {
         zoom = Math.min(zoom + 0.2, 3.0); // Max zoom 3.0x
+        targetZoom = zoom;
     }
 
     function zoomOut() {
         zoom = Math.max(zoom - 0.2, 0.1); // Min zoom 0.1 (allow fitting smaller maps)
+        targetZoom = zoom;
     }
 
     // --- Initialization ---
@@ -1143,7 +1404,8 @@ function drawCrops(x, y) {
         resizeCanvas();
 
         // Compute and set initial fitted zoom so the whole map is visible on start
-        zoom = computeFitZoom();
+        targetZoom = computeFitZoom();
+        zoom = targetZoom;
 
         // Create the initial set of clouds
         initClouds();
@@ -1154,8 +1416,17 @@ function drawCrops(x, y) {
         // Identify and label all bodies of water
         identifyWaterBodies();
 
-        // Create the tractors
-        initTractors();
+        // Find circus area and create the ferris wheel
+        initFerrisWheel();
+
+        // Find education area and create a wind turbine
+        initWindTurbines();
+
+        // Sprinkle random flowers on grass
+        initRandomFlowers();
+
+        // Place flags
+        initFlags();
 
         // Add listeners
         window.addEventListener('keydown', handleKeyDown);

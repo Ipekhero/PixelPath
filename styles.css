@@ -40,6 +40,56 @@ canvas {
     margin-top: 10px;
 }
 
+/* Overlay and Sign Popup */
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 150;
+}
+
+#signPopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #FFFACD; /* LemonChiffon to match sign board */
+    color: #333;
+    padding: 30px;
+    border-radius: 15px;
+    border: 5px solid #A0522D; /* Sienna */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 20px;
+    max-width: 60%;
+    width: 500px;
+    text-align: left;
+    box-shadow: 0 0 25px rgba(0,0,0,0.7);
+    z-index: 200;
+}
+
+#signPopup p {
+    margin: 0 0 20px 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#signPopup button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    background-color: #FF69B4;
+    color: white;
+    border: 2px solid #C71585;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
 /* Zoom Controls */
 #zoomControls {
     position: absolute;
