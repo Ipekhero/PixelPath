@@ -58,18 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p>Welcome to my Experience section!</p>
                 <p>Here you can find information about my professional journey, roles, and accomplishments.</p>
                 <p><a href="https://linkedin.com" target="_blank">View my LinkedIn Profile</a></p>
-            `,
-            characterSVG: `
-                <svg width="150" height="150" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="35" y="15" width="30" height="25" fill="#0052A5"/>
-                    <rect x="40" y="20" width="20" height="15" fill="#FFFFFF"/>
-                    <rect x="35" y="45" width="30" height="35" fill="#0052A5"/>
-                    <rect x="32" y="50" width="36" height="6" fill="#FFFFFF"/>
-                    <rect x="30" y="60" width="12" height="25" fill="#0052A5"/>
-                    <rect x="58" y="60" width="12" height="25" fill="#0052A5"/>
-                    <rect x="42" y="55" width="4" height="4" fill="#FFFFFF"/>
-                    <rect x="54" y="55" width="4" height="4" fill="#FFFFFF"/>
-                </svg>
             `
         },
         { 
@@ -80,20 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p>This is the Fun Zone! 🎉</p>
                 <p>Discover my hobbies, interests, and side projects.</p>
                 <p>When I'm not coding, you'll find me exploring new technologies, playing games, or working on creative projects.</p>
-            `,
-            characterSVG: `
-                <svg width="150" height="150" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="35" y="15" width="30" height="25" fill="#0052A5"/>
-                    <rect x="40" y="20" width="20" height="15" fill="#FFFFFF"/>
-                    <rect x="43" y="23" width="4" height="4" fill="#0052A5"/>
-                    <rect x="53" y="23" width="4" height="4" fill="#0052A5"/>
-                    <rect x="43" y="30" width="14" height="3" fill="#0052A5"/>
-                    <rect x="35" y="45" width="30" height="35" fill="#0052A5"/>
-                    <rect x="30" y="60" width="12" height="25" fill="#0052A5"/>
-                    <rect x="58" y="60" width="12" height="25" fill="#0052A5"/>
-                    <rect x="47" y="8" width="6" height="8" fill="#FFFFFF"/>
-                    <rect x="44" y="10" width="12" height="3" fill="#FFFFFF"/>
-                </svg>
             `
         },
         { 
@@ -103,20 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3>Education & Learning</h3>
                 <p>My academic background and continuous learning journey.</p>
                 <p>I believe in lifelong learning and constantly expanding my knowledge through courses, books, and hands-on projects.</p>
-            `,
-            characterSVG: `
-                <svg width="150" height="150" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="35" y="15" width="30" height="25" fill="#0052A5"/>
-                    <rect x="40" y="20" width="20" height="15" fill="#FFFFFF"/>
-                    <rect x="40" y="12" width="20" height="6" fill="#0052A5"/>
-                    <rect x="35" y="45" width="30" height="35" fill="#0052A5"/>
-                    <rect x="30" y="60" width="12" height="25" fill="#0052A5"/>
-                    <rect x="58" y="60" width="12" height="25" fill="#0052A5"/>
-                    <rect x="42" y="52" width="16" height="18" fill="#FFFFFF"/>
-                    <rect x="45" y="55" width="10" height="2" fill="#0052A5"/>
-                    <rect x="45" y="60" width="10" height="2" fill="#0052A5"/>
-                    <rect x="45" y="65" width="10" height="2" fill="#0052A5"/>
-                </svg>
             `
         },
         { 
@@ -127,19 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p>Check out my portfolio of completed and ongoing projects.</p>
                 <p>From web applications to creative experiments, each project represents a learning journey and problem-solving adventure.</p>
                 <p><a href="#" target="_blank">View Projects Gallery</a></p>
-            `,
-            characterSVG: `
-                <svg width="150" height="150" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="35" y="15" width="30" height="25" fill="#0052A5"/>
-                    <rect x="40" y="20" width="20" height="15" fill="#FFFFFF"/>
-                    <rect x="35" y="45" width="30" height="35" fill="#0052A5"/>
-                    <rect x="30" y="60" width="12" height="25" fill="#0052A5"/>
-                    <rect x="58" y="60" width="12" height="25" fill="#0052A5"/>
-                    <rect x="20" y="50" width="20" height="15" fill="#FFFFFF"/>
-                    <rect x="22" y="52" width="16" height="11" fill="#0052A5"/>
-                    <rect x="24" y="54" width="4" height="3" fill="#FFFFFF"/>
-                    <rect x="30" y="54" width="4" height="3" fill="#FFFFFF"/>
-                </svg>
             `
         },
         { 
@@ -720,6 +667,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.save();
         ctx.translate(x, y);
 
+        // Ensure no stroke is applied to tiles
+        ctx.lineWidth = 0;
+        ctx.strokeStyle = 'transparent';
+
         // Top face
         ctx.beginPath();
         ctx.moveTo(0, 0);
@@ -1238,6 +1189,130 @@ function drawCrops(x, y) {
         ctx.stroke();
     }
 
+    // Create a static player image for the popup
+    function createPlayerImage(graduationHat = false) {
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        // Set canvas size to fit the player
+        tempCanvas.width = 200;
+        tempCanvas.height = 200;
+        
+        // Fill background with grass green
+        tempCtx.fillStyle = '#7CBA5A';
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        
+        // Center the player in the canvas
+        const scale = 2; // Make character 2x larger
+        const centerX = 100;
+        const centerY = 120;
+        
+        // Draw the player using the temp context (scaled up)
+        const playerTopY = centerY - (player.height * scale) + TILE_HEIGHT;
+        const dressColor = player.color;
+        const skinColor = '#FFDBAC';
+        
+        // Dress (main body) - A-line shape
+        tempCtx.fillStyle = dressColor;
+        tempCtx.beginPath();
+        tempCtx.moveTo(centerX - (player.width / 2 + 2) * scale, playerTopY);
+        tempCtx.lineTo(centerX + (player.width / 2 - 2) * scale, playerTopY);
+        tempCtx.lineTo(centerX + player.width * scale, playerTopY + (player.height + 10) * scale);
+        tempCtx.lineTo(centerX - player.width * scale, playerTopY + (player.height + 10) * scale);
+        tempCtx.closePath();
+        tempCtx.fill();
+        
+        // Arms
+        const armWidth = 5 * scale;
+        tempCtx.fillStyle = skinColor;
+        tempCtx.fillRect(centerX - (player.width / 2) * scale - armWidth, playerTopY + 2 * scale, armWidth, 12 * scale);
+        tempCtx.fillRect(centerX + (player.width / 2) * scale, playerTopY + 2 * scale, armWidth, 12 * scale);
+        
+        // Legs
+        const legWidth = 6 * scale;
+        tempCtx.fillRect(centerX - legWidth, playerTopY + (player.height + 10) * scale, legWidth, 10 * scale);
+        tempCtx.fillRect(centerX, playerTopY + (player.height + 10) * scale, legWidth, 10 * scale);
+        
+        // Feet
+        tempCtx.fillStyle = '#8A2BE2';
+        tempCtx.fillRect(centerX - legWidth - scale, playerTopY + (player.height + 20) * scale, legWidth + 2 * scale, 4 * scale);
+        tempCtx.fillRect(centerX - scale, playerTopY + (player.height + 20) * scale, legWidth + 2 * scale, 4 * scale);
+        
+        // Hair
+        const hairColor = '#8B4513';
+        const hairTopY = playerTopY - 12 * scale;
+        tempCtx.fillStyle = hairColor;
+        const curlSize = 8 * scale;
+        
+        for (let i = 0; i < 5; i++) {
+            tempCtx.beginPath();
+            tempCtx.arc(centerX - 15 * scale + i * 7 * scale, hairTopY + 15 * scale, curlSize, 0, Math.PI * 2);
+            tempCtx.fill();
+        }
+        for (let i = 0; i < 6; i++) {
+            tempCtx.beginPath();
+            tempCtx.arc(centerX - 18 * scale + i * 7 * scale, hairTopY + 8 * scale, curlSize, 0, Math.PI * 2);
+            tempCtx.fill();
+        }
+        for (let i = 0; i < 5; i++) {
+            tempCtx.beginPath();
+            tempCtx.arc(centerX - 15 * scale + i * 7 * scale, hairTopY + 2 * scale, curlSize, 0, Math.PI * 2);
+            tempCtx.fill();
+        }
+        
+        // Face
+        tempCtx.fillStyle = skinColor;
+        tempCtx.beginPath();
+        tempCtx.arc(centerX, playerTopY + 4 * scale, 8 * scale, 0, Math.PI * 2);
+        tempCtx.fill();
+        
+        // Eyes
+        tempCtx.fillStyle = '#000';
+        tempCtx.fillRect(centerX - 4 * scale, playerTopY + 2 * scale, 2 * scale, 3 * scale);
+        tempCtx.fillRect(centerX + 2 * scale, playerTopY + 2 * scale, 2 * scale, 3 * scale);
+        
+        // Mouth
+        tempCtx.beginPath();
+        tempCtx.arc(centerX, playerTopY + 8 * scale, 2 * scale, 0, Math.PI, false);
+        tempCtx.stroke();
+
+        // Graduation hat (for education popup)
+        if (graduationHat) {
+            // Hat base (black square)
+            tempCtx.fillStyle = '#222';
+            tempCtx.fillRect(centerX - 10 * scale, playerTopY - 14 * scale, 20 * scale, 6 * scale);
+            // Hat top (black parallelogram)
+            tempCtx.beginPath();
+            tempCtx.moveTo(centerX - 14 * scale, playerTopY - 14 * scale);
+            tempCtx.lineTo(centerX + 14 * scale, playerTopY - 14 * scale);
+            tempCtx.lineTo(centerX + 10 * scale, playerTopY - 22 * scale);
+            tempCtx.lineTo(centerX - 10 * scale, playerTopY - 22 * scale);
+            tempCtx.closePath();
+            tempCtx.fillStyle = '#222';
+            tempCtx.fill();
+            // Tassel (yellow line)
+            tempCtx.strokeStyle = '#FFD700';
+            tempCtx.lineWidth = 2 * scale;
+            tempCtx.beginPath();
+            tempCtx.moveTo(centerX + 8 * scale, playerTopY - 22 * scale);
+            tempCtx.lineTo(centerX + 8 * scale, playerTopY - 10 * scale);
+            tempCtx.stroke();
+            // Tassel ball
+            tempCtx.beginPath();
+            tempCtx.arc(centerX + 8 * scale, playerTopY - 10 * scale, 2 * scale, 0, Math.PI * 2);
+            tempCtx.fillStyle = '#FFD700';
+            tempCtx.fill();
+        }
+
+        // Return the canvas as an img element
+        const img = document.createElement('img');
+        img.src = tempCanvas.toDataURL();
+        img.style.imageRendering = 'pixelated';
+        img.style.width = '100%';
+        img.style.height = 'auto';
+        return img.outerHTML;
+    }
+
     // Utility to darken/lighten a color
     function shadeColor(color, percent) {
         let R = parseInt(color.substring(1, 3), 16);
@@ -1635,7 +1710,15 @@ function drawCrops(x, y) {
         // signData should have: title/message, content (HTML), characterSVG (optional)
         const title = signData.message || signData.title || 'Sign';
         const content = signData.content || `<p>${signData.message || ''}</p>`;
-        const characterSVG = signData.characterSVG || defaultCharacterSVG;
+        
+        // Use player image, with graduation hat for education sign
+        let characterHTML;
+        const isEducation = (signData.title || signData.message || '').toLowerCase().includes('education');
+        if (isEducation) {
+            characterHTML = createPlayerImage(true); // pass true for graduation hat
+        } else {
+            characterHTML = signData.characterSVG || createPlayerImage();
+        }
         
         // Get the new popup elements
         const detailPopup = document.getElementById('signDetailPopup');
@@ -1644,9 +1727,23 @@ function drawCrops(x, y) {
         const detailText = document.getElementById('signDetailText');
         
         // Set the content
-        detailHeader.textContent = title;
-        detailCharacter.innerHTML = characterSVG;
-        detailText.innerHTML = content;
+        if (isEducation) {
+            detailHeader.textContent = 'Academic background';
+            detailCharacter.innerHTML = characterHTML;
+            detailText.innerHTML = `
+                <ul style="font-size:1.2em;line-height:1.8;margin-bottom:16px;">
+                    <li style="margin-bottom:12px;"><strong>Delft University of Technology</strong><br>MSc. in Urban design</li>
+                    <li style="margin-bottom:12px;"><strong>Middle East Technical University</strong><br>BSc. in City and Regional Planning</li>
+                    <li style="margin-bottom:12px;"><strong>Technical University of Dortmund</strong><br>BSc. City Planning</li>
+                    <li style="margin-bottom:12px;"><strong>Google UX Design Professional Certificate</strong></li>
+                </ul>
+                <a href="https://ipekkahraman.figma.site/about" target="_blank" style="color:#0052A5;font-weight:bold;text-decoration:underline;">Learn more</a>
+            `;
+        } else {
+            detailHeader.textContent = title;
+            detailCharacter.innerHTML = characterHTML;
+            detailText.innerHTML = content;
+        }
         
         // Show the popup with animation
         detailPopup.style.display = 'flex';
