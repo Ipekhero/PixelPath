@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('gameCanvas');
+    // Ensure canvas fills the window
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     const ctx = canvas.getContext('2d');
     const messageBox = document.getElementById('messageBox');
     const messageText = document.getElementById('messageText');
@@ -667,9 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.save();
         ctx.translate(x, y);
 
-        // Ensure no stroke is applied to tiles
-        ctx.lineWidth = 0;
-        ctx.strokeStyle = 'transparent';
+    // Remove stroke logic entirely to prevent grid lines
 
         // Top face
         ctx.beginPath();
