@@ -241,14 +241,27 @@ canvas {
     background-color: #0052A5;
     color: #FFFFFF;
     margin: 0;
-    padding: 20px 30px;
+    padding: 22px 30px;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 24px;
+    font-size: 28px; /* h1 size */
     font-weight: bold;
     text-align: center;
     border-bottom: 4px solid #FFFFFF;
     text-transform: uppercase;
     letter-spacing: 2px;
+}
+
+.sign-detail-subheader {
+    margin: 0;
+    padding: 10px 20px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px; /* h2 size */
+    color: #0052A5;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background-color: #FFFFFF;
+    border-bottom: 2px solid #FFFFFF;
 }
 
 .sign-detail-body {
@@ -277,6 +290,12 @@ canvas {
     max-width: 100%;
     height: auto;
     image-rendering: pixelated;
+}
+
+.sign-detail-character img {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
 .sign-detail-text {

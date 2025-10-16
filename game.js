@@ -1660,14 +1660,16 @@ function drawCrops(x, y) {
         // signData should have: title/message and filename (required).
         const title = signData.message || signData.title || 'Sign';
         const detailPopup = document.getElementById('signDetailPopup');
-        const detailHeader = document.getElementById('signDetailHeader');
-        const detailCharacter = document.getElementById('signDetailCharacter');
-        const detailText = document.getElementById('signDetailText');
+    const detailHeader = document.getElementById('signDetailHeader');
+    const detailSub = document.getElementById('signDetailSubheader');
+    const detailCharacter = document.getElementById('signDetailCharacter');
+    const detailText = document.getElementById('signDetailText');
 
         const filename = signData.filename;
         if (!filename) {
             // No external file configured — show minimal unavailable message
             detailHeader.textContent = title;
+            detailSub.textContent = '';
             detailCharacter.innerHTML = createPlayerImage();
             detailText.innerHTML = '<p style="color:#444">Content unavailable. No file configured for this sign.</p>';
             detailPopup.style.display = 'flex';
@@ -1684,11 +1686,15 @@ function drawCrops(x, y) {
             const doc = parser.parseFromString(text, 'text/html');
             const root = doc.querySelector('.sign-popup-content') || doc.body;
 
-            const fetchedHeader = root.querySelector('h2') ? root.querySelector('h2').textContent.trim() : title;
+            const fetchedHeader = root.querySelector('h1') ? root.querySelector('h1').textContent.trim() : title;
+            const fetchedSubEl = root.querySelector('h2');
+            const fetchedSubHTML = fetchedSubEl ? fetchedSubEl.innerHTML.trim() : '';
+            console.log('sign popup fetched h2 (subheader):', fetchedSubHTML);
             const fetchedChar = root.querySelector('.sign-detail-character');
             const fetchedText = root.querySelector('.sign-detail-text');
 
             detailHeader.textContent = fetchedHeader;
+            detailSub.innerHTML = fetchedSubHTML;
             detailCharacter.innerHTML = fetchedChar ? fetchedChar.innerHTML : createPlayerImage(fetchedHeader.toLowerCase().includes('education'));
             detailText.innerHTML = fetchedText ? fetchedText.innerHTML : root.innerHTML;
 
@@ -1697,6 +1703,7 @@ function drawCrops(x, y) {
             messageVisible = true;
         } catch (err) {
             detailHeader.textContent = title;
+            detailSub.textContent = '';
             detailCharacter.innerHTML = createPlayerImage();
             detailText.innerHTML = '<p style="color:#444">Content unavailable. Failed to load the sign file.</p>';
             detailPopup.style.display = 'flex';
