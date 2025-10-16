@@ -259,8 +259,8 @@ canvas {
 }
 
 .sign-detail-subheader {
-    margin: 12;
-    padding: 0px 0px;
+    margin: 8px 0 6px 0; /* reduce space above and below subtitle */
+    padding: 0;
     font-family: 'Courier New', Courier, monospace;
     font-size: 24px; /* h2 size */
     color: #0052A5;
@@ -274,7 +274,7 @@ canvas {
 .sign-detail-body {
     display: flex;
     flex: 1;
-    padding: 28px;
+    padding: 12px 28px 28px 28px; /* reduce top padding so subtitle sits closer */
     gap: 24px;
     overflow-y: auto;
     align-items: stretch; /* make columns equal height (min-height = image height) */

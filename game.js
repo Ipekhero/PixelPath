@@ -1698,6 +1698,22 @@ function drawCrops(x, y) {
             detailCharacter.innerHTML = fetchedChar ? fetchedChar.innerHTML : createPlayerImage(fetchedHeader.toLowerCase().includes('education'));
             detailText.innerHTML = fetchedText ? fetchedText.innerHTML : root.innerHTML;
 
+            // Make transferable links change the character image when clicked
+            const transferableLinks = detailText.querySelectorAll('.transferable-link');
+            transferableLinks.forEach(link => {
+                // click handler
+                const onClick = (e) => {
+                    e.preventDefault();
+                    const imgSrc = link.getAttribute('data-img');
+                    if (!imgSrc) return;
+                    // replace detailCharacter content with an img
+                    detailCharacter.innerHTML = `<img src="${imgSrc}" alt="Preview" style="max-width:100%; max-height:100%; width:auto; height:auto; display:block; object-fit:contain;" />`;
+                };
+                // store the handler on the element so it can be removed later
+                link.__signClickHandler = onClick;
+                link.addEventListener('click', onClick);
+            });
+
             detailPopup.style.display = 'flex';
                 setTimeout(() => detailPopup.classList.add('active'), 10);
             messageVisible = true;
@@ -1729,6 +1745,16 @@ function drawCrops(x, y) {
             const detailText = document.getElementById('signDetailText');
             if (detailCharacter) detailCharacter.style.height = '';
             if (detailText) detailText.style.minHeight = '';
+            // remove transferable link handlers if any
+            if (detailText) {
+                const links = detailText.querySelectorAll('.transferable-link');
+                links.forEach(l => {
+                    if (l.__signClickHandler) {
+                        l.removeEventListener('click', l.__signClickHandler);
+                        delete l.__signClickHandler;
+                    }
+                });
+            }
         }, 300);
         
         // Also hide old popup if it was visible
