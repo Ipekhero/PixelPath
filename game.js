@@ -1704,10 +1704,50 @@ function drawCrops(x, y) {
                 // click handler
                 const onClick = (e) => {
                     e.preventDefault();
-                    const imgSrc = link.getAttribute('data-img');
-                    if (!imgSrc) return;
-                    // replace detailCharacter content with an img
-                    detailCharacter.innerHTML = `<img src="${imgSrc}" alt="Preview" style="max-width:100%; max-height:100%; width:auto; height:auto; display:block; object-fit:contain;" />`;
+                    const raw = link.getAttribute('data-img');
+                    if (!raw) return;
+                    const imgs = raw.split(',').map(s => s.trim()).filter(Boolean);
+                    let currentIndex = 0;
+
+                    function renderImage(idx) {
+                        const src = imgs[idx];
+                        const isVideo = /\.(mp4|mov|webm)$/i.test(src);
+                        const mediaHTML = isVideo
+                            ? `<video class="fill-frame" src="${src}" autoplay muted loop playsinline controls preload="metadata"></video>`
+                            : `<img src="${src}" alt="Preview" class="fill-frame" />`;
+
+                        detailCharacter.innerHTML = `
+                            <div class="character-frame">
+                                ${mediaHTML}
+                            </div>
+                            ${imgs.length > 1 ? '<div class="img-nav"><button id="imgPrev" aria-label="Previous image">‹</button><button id="imgNext" aria-label="Next image">›</button></div>' : ''}
+                        `;
+
+                        // attach nav handlers if needed
+                        if (imgs.length > 1) {
+                            const prevBtn = detailCharacter.querySelector('#imgPrev');
+                            const nextBtn = detailCharacter.querySelector('#imgNext');
+                            if (prevBtn && nextBtn) {
+                                prevBtn.addEventListener('click', () => {
+                                    currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
+                                    renderImage(currentIndex);
+                                });
+                                nextBtn.addEventListener('click', () => {
+                                    currentIndex = (currentIndex + 1) % imgs.length;
+                                    renderImage(currentIndex);
+                                });
+                            }
+                            // attach video error handler if a video was rendered
+                            const vid = detailCharacter.querySelector('video');
+                            if (vid) {
+                                vid.addEventListener('error', (ev) => {
+                                    console.error('Video failed to load:', src, ev);
+                                });
+                            }
+                        }
+                    }
+
+                    renderImage(currentIndex);
                 };
                 // store the handler on the element so it can be removed later
                 link.__signClickHandler = onClick;
@@ -1753,6 +1793,13 @@ function drawCrops(x, y) {
                         l.removeEventListener('click', l.__signClickHandler);
                         delete l.__signClickHandler;
                     }
+                });
+            }
+            // pause any videos inside the character frame
+            if (detailCharacter) {
+                const vids = detailCharacter.querySelectorAll('video');
+                vids.forEach(v => {
+                    try { v.pause(); v.src = ''; } catch (e) {}
                 });
             }
         }, 300);
