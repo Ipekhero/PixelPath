@@ -342,6 +342,86 @@ canvas {
     margin-bottom: 12px;
 }
 
+/* Tools list and language flag styles */
+.tools-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+}
+.tools-list li {
+    background: rgba(0,82,165,0.06);
+    padding: 6px 10px;
+    border: 1px solid rgba(0,82,165,0.12);
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+/* Transferable skills clickable boxes */
+.transferable-list {
+    display: flex;
+    gap: 12px 18px;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 6px 0 12px 0;
+    list-style: none;
+}
+.transferable-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    background: rgba(124,186,90,0.06);
+    color: #0052A5;
+    border: 1px solid rgba(124,186,90,0.18);
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform 0.08s steps(1), box-shadow 0.08s;
+}
+.transferable-link:hover,
+.transferable-link:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 0 rgba(0,0,0,0.15);
+    outline: 3px solid rgba(0,82,165,0.12);
+}
+.transferable-link:active {
+    transform: translateY(0);
+}
+
+
+.language-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+.lang-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.flag-pixel {
+    width: 36px;
+    height: 24px;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    shape-rendering: crispEdges;
+    border: 2px solid #0052A5;
+    border-radius: 3px;
+    display: inline-block;
+}
+.lang-name {
+    font-size: 16px;
+    color: #0052A5;
+}
+
+
 .sign-detail-text a {
     color: #0052A5;
     text-decoration: underline;
