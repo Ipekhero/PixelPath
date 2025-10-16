@@ -5,6 +5,10 @@ body {
     background-color: #1a1a1a;
     overflow: hidden; /* Prevent scrollbars */
 }
+
+:root {
+    --popup-image-padding: 18px;
+}
 canvas {
     display: block;
     image-rendering: -moz-crisp-edges;
@@ -79,7 +83,7 @@ canvas {
     transform: translate(-50%, -50%) scale(0.3);
     background-color: #FFFFFF;
     color: #333;
-    padding: 48px;
+    padding: var(--popup-image-padding);
     border-radius: 20px;
     border: 6px solid #0052A5;
     font-family: 'Courier New', Courier, monospace;
@@ -122,14 +126,17 @@ canvas {
 }
 
 #signPopup a:hover {
-    border-bottom: 2px solid #0052A5;
+    /* remove underline on hover, keep green text */
+    text-decoration: none !important;
+    border-bottom-color: transparent !important;
+    color: #7CBA5A;
 }
 
 #signPopup img {
     max-width: 100%;
     height: auto;
     border-radius: 10px;
-    margin: 20px 0;
+    margin: var(--popup-image-padding);
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
@@ -243,7 +250,7 @@ canvas {
     margin: 0;
     padding: 22px 30px;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 28px; /* h1 size */
+    font-size: 36px; /* h1 size */
     font-weight: bold;
     text-align: center;
     border-bottom: 4px solid #FFFFFF;
@@ -252,10 +259,10 @@ canvas {
 }
 
 .sign-detail-subheader {
-    margin: 0;
-    padding: 10px 20px;
+    margin: 12;
+    padding: 0px 0px;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 16px; /* h2 size */
+    font-size: 24px; /* h2 size */
     color: #0052A5;
     text-align: center;
     text-transform: uppercase;
@@ -280,7 +287,7 @@ canvas {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 18px;
+    padding: var(--popup-image-padding);
     /* fixed frame dimensions */
     height: 220px;
     background-color: #FFFFFF;
@@ -342,9 +349,57 @@ canvas {
     margin-top: auto; /* pushes the link to the bottom of the text box */
 }
 
+.sign-detail-text a {
+    /* baseline: ensure a border-bottom exists so hover underline color can change */
+    border-bottom: 2px solid transparent;
+    transition: color 0.12s ease, border-bottom-color 0.12s ease;
+}
+
 .sign-detail-text a:hover {
-    background-color: #0052A5;
-    color: #FFFFFF;
+    background-color: #FFFFFF;
+    color: #7CBA5A !important; /* player's green; use !important to override inline styles */
+    text-decoration: none !important; /* remove underline */
+    border-bottom-color: transparent !important;
+}
+
+/* Stronger rule to override inline styles for popup anchors */
+#signPopup .sign-detail-text a,
+#signPopup .sign-detail-text a:link,
+#signPopup .sign-detail-text a:visited {
+    transition: color 0.12s ease, border-bottom-color 0.12s ease;
+}
+#signPopup .sign-detail-text a:hover,
+#signPopup .sign-detail-text a:active,
+#signPopup .sign-detail-text a:focus {
+    color: #7CBA5A !important;
+    text-decoration: none !important;
+    border-bottom-color: transparent !important;
+}
+
+/* Projects inline gallery hover rules (moved from fragment to global CSS)
+   Ensures hover effects apply even when sign HTML is injected dynamically. */
+.projects-inline-gallery {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: flex-start;
+}
+.projects-inline-gallery a {
+    display: block;
+    overflow: hidden;
+    border-radius: 8px;
+}
+.projects-inline-gallery a img {
+    display: block;
+    transition: transform 0.12s ease;
+    /* sizes are controlled in the fragment, keep image responsive here */
+}
+.projects-inline-gallery a:hover img {
+    transform: scale(1.12);
+}
+.projects-inline-gallery a:hover {
+    box-shadow: 0 0 0 4px rgba(0,82,165,0.95);
+    border-radius: 8px;
 }
 
 .sign-detail-cta {
