@@ -1699,7 +1699,7 @@ function drawCrops(x, y) {
             detailText.innerHTML = fetchedText ? fetchedText.innerHTML : root.innerHTML;
 
             detailPopup.style.display = 'flex';
-            setTimeout(() => detailPopup.classList.add('active'), 10);
+                setTimeout(() => detailPopup.classList.add('active'), 10);
             messageVisible = true;
         } catch (err) {
             detailHeader.textContent = title;
@@ -1723,6 +1723,12 @@ function drawCrops(x, y) {
         detailPopup.classList.remove('active');
         setTimeout(() => {
             detailPopup.style.display = 'none';
+            // cleanup: remove resize listener and reset inline heights
+            window.removeEventListener('resize', adjustSignDetailHeights);
+            const detailCharacter = document.getElementById('signDetailCharacter');
+            const detailText = document.getElementById('signDetailText');
+            if (detailCharacter) detailCharacter.style.height = '';
+            if (detailText) detailText.style.minHeight = '';
         }, 300);
         
         // Also hide old popup if it was visible
