@@ -846,23 +846,31 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.save();
         ctx.translate(x, y);
 
-        const poleHeight = 120;
+        // Allow certain flags (Zurich) to be drawn larger for visibility
+        let flagScale = 1;
+        if (type === 'zurich') flagScale = 1.6; // increase size for Zurich
+
+        const basePoleHeight = 120;
+        const poleHeight = basePoleHeight * flagScale;
         const poleColor = '#C0C0C0'; // Silver
-        const flagWidth = 50;
-        const flagHeight = 32;
+        const baseFlagWidth = 50;
+        const baseFlagHeight = 32;
+        const flagWidth = baseFlagWidth * flagScale;
+        const flagHeight = baseFlagHeight * flagScale;
+        const poleWidth = 2 * flagScale;
 
-        // Shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.15)';
-        ctx.beginPath();
-        ctx.ellipse(0, TILE_HEIGHT, 8, 4, 0, 0, Math.PI * 2);
-        ctx.fill();
+    // Shadow (scaled)
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.beginPath();
+    ctx.ellipse(0, TILE_HEIGHT, 8 * flagScale, 4 * flagScale, 0, 0, Math.PI * 2);
+    ctx.fill();
 
-        // Pole
-        ctx.fillStyle = poleColor;
-        ctx.fillRect(-2, -poleHeight + TILE_HEIGHT, 4, poleHeight);
+    // Pole (scaled)
+    ctx.fillStyle = poleColor;
+    ctx.fillRect(-poleWidth, -poleHeight + TILE_HEIGHT, poleWidth * 2, poleHeight);
 
-        // Flag
-        const flagY = -poleHeight + TILE_HEIGHT;
+    // Flag
+    const flagY = -poleHeight + TILE_HEIGHT;
         if (type === 'zurich') {
             // Draw the full white rectangle first
             ctx.fillStyle = '#FFFFFF';
