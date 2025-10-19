@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let fitMap = true;
     let minZoomForMap = 1.0; // Track the minimum zoom that fits the entire map
     let isAnimatingZoomOut = false; // Flag to bypass normal camera logic during zoom-out animation
+    let mousePos = { x: 0, y: 0 }; // Track mouse position for hover detection
+    let hoveredSignTile = null; // Track which sign is being hovered
 
     // --- Overlay: central path and city ---
     // Adds a vertical and horizontal path crossing the map center and a 5x5 city block.
@@ -764,12 +766,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Draws a sign
-    function drawSign(x, y, message = "?", part = 'full') {
+    function drawSign(x, y, message = "?", part = 'full', isHovered = false) {
         const boardWidth = 120; // Wider and more rectangular
         const boardHeight = 40;
         const postColor = '#778899'; // LightSlateGray for a metal look
-    const boardColor = '#0052A5'; // Blue
-    const textColor = '#FFFFFF'; // White
+        const boardColor = '#0052A5'; // Blue
+        const textColor = '#FFFFFF'; // White
+        
+        // Apply scale effect if hovered
+        const scale = isHovered ? 1.2 : 1.0;
+        
+        ctx.save();
+        if (isHovered) {
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+            ctx.translate(-x, -y);
+        }
 
         if (part === 'full' || part === 'post') {
             // Shadow
@@ -806,6 +818,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             ctx.fillText(message, x, y - 55 + boardHeight / 2);
         }
+        
+        ctx.restore();
     }
 
     // Draws scenery objects like trees or flowers
@@ -1480,7 +1494,7 @@ function drawCrops(x, y) {
                     if (interactiveSign) {
                         message = interactiveSign.message;
                     }
-                    objectsToDraw.push({type: 'sign', iso, meta: { message }});
+                    objectsToDraw.push({type: 'sign', iso, meta: { message, tileX: x, tileY: y }});
                 } else if (tileType === 9) {
                     objectsToDraw.push({type: 'circus', iso});
                 }
@@ -1591,7 +1605,9 @@ function drawCrops(x, y) {
                     drawHut(obj.iso.x, obj.iso.y);
                     break;
                 case 'sign':
-                    drawSign(obj.iso.x, obj.iso.y, obj.meta.message, 'post');
+                    // Check if this sign is being hovered
+                    const isSignHovered = hoveredSignTile && hoveredSignTile.x === obj.meta.tileX && hoveredSignTile.y === obj.meta.tileY;
+                    drawSign(obj.iso.x, obj.iso.y, obj.meta.message, 'post', isSignHovered);
                     break;
                 case 'interactive':
                     // draw a small red square to represent the interactive object
@@ -1619,14 +1635,16 @@ function drawCrops(x, y) {
         // --- Second Pass: Draw sign boards on top of everything ---
         objectsToDraw.forEach(obj => {
             if (obj.type === 'sign') {
-                drawSign(obj.iso.x, obj.iso.y, obj.meta.message, 'board');
+                // Check if this sign is being hovered
+                const isSignHovered = hoveredSignTile && hoveredSignTile.x === obj.meta.tileX && hoveredSignTile.y === obj.meta.tileY;
+                drawSign(obj.iso.x, obj.iso.y, obj.meta.message, 'board', isSignHovered);
             }
         });
 
             // Draw a small jumping blue arrow above every sign to indicate click-to-move
             function drawSignArrow(x, y) {
                 ctx.save();
-                ctx.translate(x, y - 70); // above the sign board
+                ctx.translate(x, y - 100); // above the sign board
                 // simple vertical bob using time
                 const t = Date.now();
                 const bob = Math.sin(t / 300) * 6; // +/-6 px
@@ -1643,10 +1661,14 @@ function drawCrops(x, y) {
                 ctx.restore();
             }
 
-            // render arrows
+            // render arrows only when signs are hovered
             objectsToDraw.forEach(obj => {
                 if (obj.type === 'sign') {
-                    drawSignArrow(obj.iso.x, obj.iso.y);
+                    // Check if this sign is being hovered
+                    const isSignHovered = hoveredSignTile && hoveredSignTile.x === obj.meta.tileX && hoveredSignTile.y === obj.meta.tileY;
+                    if (isSignHovered) {
+                        drawSignArrow(obj.iso.x, obj.iso.y);
+                    }
                 }
             });
 
@@ -2188,7 +2210,62 @@ function drawCrops(x, y) {
         document.getElementById('zoomOut').addEventListener('click', zoomOut);
         document.getElementById('resetView').addEventListener('click', resetView);
 
-        // Add canvas click listener for autopilot to signs
+        // Add mouse move listener to track hovered signs
+        canvas.addEventListener('mousemove', (ev) => {
+            // Track mouse position
+            mousePos.x = ev.clientX;
+            mousePos.y = ev.clientY;
+            
+            // Convert screen coordinates to map coordinates
+            function screenToMap(screenX, screenY) {
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = screenX - rect.left;
+                const canvasY = screenY - rect.top;
+
+                const worldIsoX = (canvasX - camera.x) / zoom;
+                const worldIsoY = (canvasY - camera.y) / zoom;
+
+                const a = TILE_WIDTH / 2;
+                const b = TILE_HEIGHT / 2;
+
+                const mapX = (worldIsoX / a + worldIsoY / b) / 2;
+                const mapY = (worldIsoY / b - worldIsoX / a) / 2;
+
+                return { x: mapX, y: mapY };
+            }
+            
+            const m = screenToMap(ev.clientX, ev.clientY);
+            const ix = Math.floor(m.x);
+            const iy = Math.floor(m.y);
+            
+            // Check if hovering over a sign (with expanded range of 2.0 tiles)
+            let isHoveringSign = false;
+            for (let y = 0; y < MAP_ROWS; y++) {
+                for (let x = 0; x < MAP_COLS; x++) {
+                    if (map[y][x] === 6) {
+                        const dx = m.x - x;
+                        const dy = m.y - y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance <= 2.0) {
+                            hoveredSignTile = { x, y };
+                            isHoveringSign = true;
+                            break;
+                        }
+                    }
+                }
+                if (isHoveringSign) break;
+            }
+            if (!isHoveringSign) {
+                hoveredSignTile = null;
+            }
+        });
+        
+        // Clear hover on mouse leave
+        canvas.addEventListener('mouseleave', () => {
+            hoveredSignTile = null;
+        });
+
+        // Add canvas click listener for autopilot to any tile
         canvas.addEventListener('click', (ev) => {
             // Convert screen coordinates to map coordinates
             function screenToMap(screenX, screenY) {
@@ -2219,11 +2296,11 @@ function drawCrops(x, y) {
             
             const tileType = map[iy][ix];
             
-            // Helper function to check if click is near a sign (within 1.5 tiles)
+            // Helper function to check if click is near a sign (within 2.0 tiles - expanded clickable area)
             const isNearSign = (signX, signY) => {
                 const dx = m.x - signX;
                 const dy = m.y - signY;
-                return Math.sqrt(dx * dx + dy * dy) <= 1.5;
+                return Math.sqrt(dx * dx + dy * dy) <= 2.0;
             };
 
             // Check for nearby interactive objects (expanded clickable area)
@@ -2235,6 +2312,7 @@ function drawCrops(x, y) {
                 interactive = interactives.find(o => Math.floor(o.x) === ix && Math.floor(o.y) === iy);
             }
 
+            // If sign or interactive, navigate to it
             if (isSignTile || interactive) {
                 // Use the interactive's position if found, otherwise use clicked position
                 const targetX = interactive ? Math.floor(interactive.x) : ix;
@@ -2263,7 +2341,32 @@ function drawCrops(x, y) {
                 return;
             }
 
-            // Fallback: show general messages for other tile types
+            // For any other walkable tile, start autopilot to that location
+            // Check if the tile is walkable (not water, tree, or hut)
+            if (tileType !== 2 && tileType !== 3 && tileType !== 5) {
+                // Try direct path first
+                let path = computePath(player.x, player.y, ix, iy);
+                if (path === null) {
+                    // Try to find nearest accessible approach tile
+                    path = findNearestAccessiblePath(player.x, player.y, ix, iy, 10);
+                }
+                if (path === null) {
+                    showMessage("No path to destination.");
+                    return;
+                }
+                if (path.length === 0) {
+                    // Already at the destination
+                    return;
+                }
+                // Start autopilot to the clicked tile
+                player.path = path;
+                player.autoTarget = { x: ix, y: iy };
+                player.moveTimer = 0;
+                console.log('Autopilot started to', ix, iy, 'steps:', path.length);
+                return;
+            }
+
+            // Show messages for non-walkable tiles
             if (messages[tileType]) {
                 showMessage(messages[tileType]);
             } else {
