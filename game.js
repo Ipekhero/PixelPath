@@ -47,6 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let cinematicFocus = null; // Stores {player, target} for cinematic zoom
     let targetZoom = 1.0;
     let initialView = true; // true at start: show entire map fitted to canvas
+    // When true, the camera will show the whole map (fit). When false, follow player.
+    let fitMap = true;
 
     // --- Overlay: central path and city ---
     // Adds a vertical and horizontal path crossing the map center and a 5x5 city block.
@@ -1351,7 +1353,7 @@ function drawCrops(x, y) {
 
         ctx.save();
 
-        // Center camera: if initialView is true, center on map and keep the fit zoom
+        // Center camera: decide between cinematic focus, fitMap (show whole map), or follow player
         if (cinematicFocus) {
             // Center camera between player and the sign for cinematic effect
             const midX = (cinematicFocus.player.x + cinematicFocus.target.x) / 2;
@@ -1359,8 +1361,8 @@ function drawCrops(x, y) {
             const midIso = toIsometric(midX, midY);
             camera.x = canvas.width / 2 - midIso.x * zoom;
             camera.y = canvas.height / 2 - midIso.y * zoom;
-        } else if (initialView) {
-            // center on map midpoint
+        } else if (fitMap || initialView) {
+            // center on map midpoint (fit)
             const centerIso = toIsometric((MAP_COLS - 1) / 2, (MAP_ROWS - 1) / 2);
             camera.x = canvas.width / 2 - centerIso.x * zoom;
             camera.y = canvas.height / 2 - centerIso.y * zoom;
@@ -2084,6 +2086,24 @@ function drawCrops(x, y) {
         // Add zoom control listeners
         document.getElementById('zoomIn').addEventListener('click', zoomIn);
         document.getElementById('zoomOut').addEventListener('click', zoomOut);
+        // Fit vs Follow toggle
+        const toggleBtn = document.getElementById('toggleView');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                fitMap = !fitMap;
+                // Update button text to reflect next action
+                toggleBtn.textContent = fitMap ? 'Fit map' : 'Follow player';
+                // When switching to fit, recompute zoom and center immediately
+                if (fitMap) {
+                    targetZoom = computeFitZoom();
+                    zoom = targetZoom;
+                    initialView = true;
+                } else {
+                    initialView = false;
+                }
+                requestAnimationFrame(render);
+            });
+        }
 
         // Escape key cancels autopilot
         window.addEventListener('keydown', (ev) => {
