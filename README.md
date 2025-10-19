@@ -1,6 +1,6 @@
-# Pixel Adventure RPG
+# PixelPath
 
-A web-based pixel art adventure RPG game built with HTML5 Canvas and JavaScript.
+A web-based pixel art adventure game built with HTML5 Canvas and JavaScript.
 
 ## Prerequisites
 
