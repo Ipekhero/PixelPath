@@ -39,26 +39,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Expose helper to window for console editing
     window.setSignText = setSignText;
 
-    // --- Game Configuration ---
     const TILE_WIDTH = 64;
     const TILE_HEIGHT = TILE_WIDTH / 2;
     let zoom = 1.0;
     let messageVisible = false;
-    let cinematicFocus = null; // Stores {player, target} for cinematic zoom
+    let cinematicFocus = null;
     let targetZoom = 1.0;
-    let initialView = true; // true at start: show entire map fitted to canvas
-    // When true, the camera will show the whole map (fit). When false, follow player.
-    let fitMap = true;
-    let minZoomForMap = 1.0; // Track the minimum zoom that fits the entire map
-    let isAnimatingZoomOut = false; // Flag to bypass normal camera logic during zoom-out animation
-    let mousePos = { x: 0, y: 0 }; // Track mouse position for hover detection
-    let hoveredSignTile = null; // Track which sign is being hovered
-
-    // --- Overlay: central path and city ---
-    // Adds a vertical and horizontal path crossing the map center and a 5x5 city block.
-    // interactive objects list (pre-populated with persistent signs)
+    let minZoomForMap = 1.0;
+    let isAnimatingZoomOut = false;
+    let mousePos = { x: 0, y: 0 };
+    let hoveredSignTile = null;
     const interactives = [
-        // Sign interactions now reference dedicated HTML files (content moved to those files)
         { x: 29, y: 31, message: 'EXPERIENCE', filename: 'sign-experience.html' },
         { x: 4,  y: 8,  message: 'FUN',        filename: 'sign-fun.html' },
         { x: 7,  y: 33, message: 'EDUCATION',  filename: 'sign-education.html' },
@@ -73,11 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const centerX = Math.floor(cols / 2); // central column
         const centerY = Math.floor(rows / 2); // central row
 
-        // NOTE: removed global center cross (vertical/horizontal paths) so the
-        // map's literal content remains authoritative.
-
-        // City layout parameters - increased radius for more space
-        const cityRadius = 3; // creates a 7x7 block
+        // NOTE: removed global center cross paths as map content is now authoritative
+        
+        const cityRadius = 3;
         const cityMinX = centerX - cityRadius;
         const cityMaxX = centerX + cityRadius;
         const cityMinY = centerY - cityRadius;
@@ -97,16 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Place buildings in the four corners of the 5x5 block and small plazas
         const buildingCoords = [
-            // Corners
             {x: cityMinX, y: cityMinY},
             {x: cityMaxX, y: cityMinY},
             {x: cityMinX, y: cityMaxY},
             {x: cityMaxX, y: cityMaxY},
-            // Mid-points
-            {x: cityMinX, y: centerY}, // This will be replaced by the path, so it's a placeholder for spacing
-            {x: cityMaxX, y: centerY}, // This will be replaced by the path
-            {x: centerX, y: cityMinY}, // This will be replaced by the path
-            {x: centerX, y: cityMaxY}  // This will be replaced by the path
+            {x: cityMinX, y: centerY},
+            {x: cityMaxX, y: centerY},
+            {x: centerX, y: cityMinY},
+            {x: centerX, y: cityMaxY}
         ];
 
         for (const b of buildingCoords) {
@@ -115,66 +102,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Fill remaining city tiles with paved squares (to represent plaza or pavement)
         for (let y = cityMinY; y <= cityMaxY; y++) {
             for (let x = cityMinX; x <= cityMaxX; x++) {
                 if (y >= 0 && y < rows && x >= 0 && x < cols) {
-                    // skip if a building or road already
                     if (map[y][x] !== 1 && map[y][x] !== 5) {
-                        map[y][x] = 1; // paved plaza
+                        map[y][x] = 1;
                     }
                 }
             }
         }
-
-        // ...removed non-sign interactives...
     })();
 
-    // --- Update signs: remove [48,15], move PROJECTS from [45,15] to [46,13] ---
-    (function updateProjectSigns() {
-        const removeX = 48, removeY = 15;
-        // Remove any interactive at [48,15]
-        for (let i = interactives.length - 1; i >= 0; i--) {
-            const it = interactives[i];
-            if (Math.floor(it.x) === removeX && Math.floor(it.y) === removeY) {
-                interactives.splice(i, 1);
-            }
-        }
-        // If underlying map tile was a sign, reset it to grass (0)
-        if (removeY >= 0 && removeY < map.length && removeX >= 0 && removeX < (map[0] || []).length) {
-            if (map[removeY][removeX] === 6) map[removeY][removeX] = 0;
-        }
-
-        // Move PROJECTS sign from [45,15] -> [46,13]
-        const oldX = 45, oldY = 15;
-        const newX = 46, newY = 13;
-
-        // Remove old interactive and clear old tile
-        for (let i = interactives.length - 1; i >= 0; i--) {
-            const it = interactives[i];
-            if (Math.floor(it.x) === oldX && Math.floor(it.y) === oldY) {
-                interactives.splice(i, 1);
-            }
-        }
-        if (oldY >= 0 && oldY < map.length && oldX >= 0 && oldX < (map[0] || []).length) {
-            if (map[oldY][oldX] === 6) map[oldY][oldX] = 0;
-        }
-
-        // Set new tile to sign and add/update interactive
-        if (newY >= 0 && newY < map.length && newX >= 0 && newX < (map[0] || []).length) {
-            map[newY][newX] = 6;
-            const idx = interactives.findIndex(it => Math.floor(it.x) === newX && Math.floor(it.y) === newY);
-            if (idx !== -1) {
-                interactives[idx].message = 'PROJECTS';
-            } else {
-                interactives.push({ x: newX, y: newY, message: 'PROJECTS' });
-            }
-            console.log(`Updated signs: removed [${removeX},${removeY}], moved PROJECTS [${oldX},${oldY}] -> [${newX},${newY}]`);
-        }
-    })();
-
-    // NOTE: circus sign at [8,4] is now baked into the map literal and
-    // `interactives` array above; runtime patching removed.
 
     const MAP_ROWS = map.length;
     const MAP_COLS = map[0].length;
@@ -182,34 +120,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let waterBodyMap;
     let largestWaterBodyId = -1;
 
-    // --- Player ---
     const player = {
-        x: Math.floor(MAP_COLS / 2), // map x
-        y: Math.floor(MAP_ROWS / 2), // map y
+        x: Math.floor(MAP_COLS / 2),
+        y: Math.floor(MAP_ROWS / 2),
         width: 16,
-        height: 24, // Not used directly for player drawing anymore, but kept for reference
-        color: '#FF69B4', // Hot Pink
+        height: 24,
+        color: '#FF69B4',
         shadowColor: 'rgba(0,0,0,0.3)'
     };
 
-    // autopilot path and movement timing
-    player.path = null; // array of {x,y} to follow
+    player.path = null;
     player.moveTimer = 0;
-    player.moveInterval = 120; // ms per tile
+    player.moveInterval = 120;
     player.autoTarget = null;
 
-    // --- Message Data ---
     let messages = {
-        6: "The sign reads: 'Welcome to Pixel Valley!'"
+        6: "The sign reads: 'Welcome to Pixel Valley!'",
+        7: "Fields of crops sway in the breeze.",
+        8: "Education district: The quiet hum of learning fills the air.",
+        9: "Circus: bright tents and lively music can be heard."
     };
-    
-    // Messages for new tile types
-    messages[7] = "Fields of crops sway in the breeze.";
-    messages[8] = "Education district: The quiet hum of learning fills the air.";
-    messages[9] = "Circus: bright tents and lively music can be heard.";
 
     (function createSchoolCampus() {
-        // Find the center of the education area to build the campus.
         const eduTiles = [];
         for (let y = 0; y < MAP_ROWS; y++) {
             for (let x = 0; x < MAP_COLS; x++) {
@@ -219,54 +151,41 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        if (eduTiles.length === 0) return; // No education area found.
+        if (eduTiles.length === 0) return;
 
-        // Find the geometric center of the main education block.
         const centerX = Math.floor(eduTiles.reduce((sum, t) => sum + t.x, 0) / eduTiles.length);
         const centerY = Math.floor(eduTiles.reduce((sum, t) => sum + t.y, 0) / eduTiles.length);
 
-        // Place a new sign for the university at the center.
-        map[centerY][centerX] = 6; // Place a sign tile.
+        map[centerY][centerX] = 6;
         interactives.push({x: centerX, y: centerY, message: "Pixel Valley University: Est. 2024"});
 
-        // Define the campus area around the new sign.
         const radius = 4;
         const startX = centerX - radius;
         const startY = centerY - radius;
         const endX = centerX + radius;
         const endY = centerY + radius;
 
-        // Replace surrounding tiles with grass and paths
         for (let y = startY; y <= endY; y++) {
             for (let x = startX; x <= endX; x++) {
                 if (y >= 0 && y < MAP_ROWS && x >= 0 && x < MAP_COLS) {
-                    // Don't overwrite the sign we just placed.
                     if (x === centerX && y === centerY) continue;
 
-                    // Create a circular path within the campus
                     const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
                     if (dist > radius - 1.5 && dist < radius - 0.5) {
-                        map[y][x] = 1; // Path
+                        map[y][x] = 1;
                     } else {
-                        map[y][x] = 0; // Grass
+                        map[y][x] = 0;
                     }
                 }
             }
         }
 
-        // Place a few "school buildings" (huts) on the new campus grounds.
         map[centerY - 2][centerX - 2] = 5;
         map[centerY - 2][centerX + 2] = 5;
         map[centerY + 2][centerX - 2] = 5;
         map[centerY + 2][centerX + 2] = 5;
     })();
 
-    // NOTE: Previously there was a runtime patch here to ensure a sign at [29,31].
-    // That runtime patch was removed and the sign/message are now persisted in
-    // the `map`/`interactives` data above so no IIFE patching is required at load.
-
-    // --- Add SKILLS sign at [28,7] as requested ---
-    // --- Add random colorful objects around SKILLS sign ---
     (function addSkillsObjects() {
         const centerX = 28, centerY = 7;
         const objects = [
@@ -285,59 +204,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     })();
-    // --- Add CERTIFICATES sign at [46,23] ---
-    (function addCertificatesSign() {
-        const sx = 46, sy = 23;
-        if (sy >= 0 && sy < map.length && sx >= 0 && sx < map[0].length) {
-            map[sy][sx] = 6; // sign tile
-            // avoid duplicates
-            const exists = interactives.find(it => Math.floor(it.x) === sx && Math.floor(it.y) === sy);
-            if (!exists) {
-                interactives.push({ x: sx, y: sy, message: 'CERTIFICATES' });
-            }
-        } else {
-            console.warn('ADD CERTIFICATES: coords out of bounds');
-        }
-    })();
-    (function addSkillsSign() {
-        const sx = 28, sy = 7;
-        if (sy >= 0 && sy < map.length && sx >= 0 && sx < map[0].length) {
-            console.log(`ADDING: placing SKILLS sign at [${sx},${sy}]`);
-            map[sy][sx] = 6; // sign tile
-            // avoid duplicates
-            const exists = interactives.find(it => Math.floor(it.x) === sx && Math.floor(it.y) === sy);
-            if (!exists) {
-                interactives.push({ x: sx, y: sy, message: 'SKILLS' });
-            }
-        } else {
-            console.warn('ADD SKILLS: coords out of bounds');
-        }
-    })();
 
-    // --- Wind Turbine Data ---
     const windTurbines = [];
-
-
-    // --- Procedural Decoration Data ---
     const randomFlowers = [];
-    const FLOWER_DENSITY = 0.025; // 2.5% chance for a flower on any given grass tile
+    const FLOWER_DENSITY = 0.025;
 
-    // --- Ferris Wheel Data ---
     let ferrisWheel = null;
-    const industrialBuildings = [];
-
-    // --- Flag Data ---
     const flags = [];
-
-
-
-    // --- Camera ---
     const camera = {
         x: 0,
         y: 0
     };
-
-    // --- Cloud Data ---
     const clouds = [];
     const NUM_CLOUDS = 15;
 
@@ -566,14 +443,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function drawEducationTile(x, y) {
-        // Base color for the tile
-        drawTile(x, y, '#CD853F'); // Peru - a reddish-brown for mortar
+        drawTile(x, y, '#CD853F');
 
         ctx.save();
         ctx.translate(x, y);
 
-        // Draw a brick pattern
-        const brickColor = '#A0522D'; // Sienna
+        const brickColor = '#A0522D';
         const brickWidth = TILE_WIDTH / 4;
         const brickHeight = TILE_HEIGHT / 4;
 
@@ -648,14 +523,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Drawing Functions ---
 
-    // Draws a single isometric tile (a rhombus)
     function drawTile(x, y, color, highlight = '#ffffff') {
         ctx.save();
         ctx.translate(x, y);
 
-    // Remove stroke logic entirely to prevent grid lines
-
-        // Top face
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(TILE_WIDTH / 2, TILE_HEIGHT / 2);
@@ -688,46 +559,36 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.restore();
     }
 
-    // Draws an animated water tile
     function drawWater(isoX, isoY, mapX, mapY) {
-        // Base water color
-        const baseColor = '#40E0D0'; // Turquoise
+        const baseColor = '#40E0D0';
         drawTile(isoX, isoY, baseColor);
 
-        // Add animated "sparkles" or "bubbles" for a more gamelike feel
         ctx.save();
         ctx.translate(isoX, isoY);
 
         const time = Date.now();
-        // Use a time-based seed that is unique for each tile to vary the animation
         const tileSeed = mapX * 13 + mapY * 31;
         const numBubbles = 3;
 
         for (let i = 0; i < numBubbles; i++) {
-            // Use a sine wave to make bubbles fade in and out.
-            // The animation is staggered for each bubble and tile.
             const anim = Math.sin(time / 600 + tileSeed + i * 2.1);
 
-            if (anim > 0.3) { // Only draw the bubble when it's "active"
-                // Deterministic, but pseudo-random, position within the tile's top face
+            if (anim > 0.3) {
                 const bubbleX = (((tileSeed + i * 5) % 100) / 100 - 0.5) * TILE_WIDTH * 0.7;
                 const bubbleY = ((((tileSeed + i * 17) % 100) / 100 - 0.5) * TILE_HEIGHT * 0.7) + TILE_HEIGHT / 2;
 
-                // Opacity is based on the animation cycle
                 ctx.fillStyle = `rgba(255, 255, 255, ${anim * 0.7})`;
                 ctx.beginPath();
-                ctx.arc(bubbleX, bubbleY, 1.5, 0, Math.PI * 2); // Small white circle
+                ctx.arc(bubbleX, bubbleY, 1.5, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
         ctx.restore();
     }
 
-    // Draws a single fluffy cloud
     function drawCloud(x, y, size) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'; // Semi-transparent white
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
         ctx.beginPath();
-        // A cloud is composed of several overlapping ellipses
         ctx.ellipse(x, y, size, size * 0.6, 0, 0, Math.PI * 2);
         ctx.ellipse(x + size * 0.6, y, size * 0.8, size * 0.4, 0, 0, Math.PI * 2);
         ctx.ellipse(x - size * 0.5, y, size * 0.7, size * 0.5, 0, 0, Math.PI * 2);
@@ -1709,21 +1570,7 @@ function drawCrops(x, y) {
         messageVisible = false;
     }
 
-    // Default SVG character for signs (8-bit style with blue and white)
-    // Colors: #0052A5 (blue), #FFFFFF (white)
-    const defaultCharacterSVG = `
-        <svg width="150" height="150" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <rect x="35" y="15" width="30" height="30" fill="#0052A5"/>
-            <rect x="40" y="20" width="20" height="20" fill="#FFFFFF"/>
-            <rect x="35" y="50" width="30" height="40" fill="#0052A5"/>
-            <rect x="30" y="60" width="10" height="30" fill="#0052A5"/>
-            <rect x="60" y="60" width="10" height="30" fill="#0052A5"/>
-        </svg>
-    `;
-
-    // Show sign popup with rich content using new detailed popup
     async function showSignPopup(signData) {
-        // signData should have: title/message and filename (required).
         const title = signData.message || signData.title || 'Sign';
         const detailPopup = document.getElementById('signDetailPopup');
     const detailHeader = document.getElementById('signDetailHeader');
@@ -1890,8 +1737,6 @@ function drawCrops(x, y) {
         detailPopup.classList.remove('active');
         setTimeout(() => {
             detailPopup.style.display = 'none';
-            // cleanup: remove resize listener and reset inline heights
-            window.removeEventListener('resize', adjustSignDetailHeights);
             const detailCharacter = document.getElementById('signDetailCharacter');
             const detailText = document.getElementById('signDetailText');
             if (detailCharacter) detailCharacter.style.height = '';
@@ -2120,14 +1965,11 @@ function drawCrops(x, y) {
         // Collision Detection
         if (nextX >= 0 && nextX < MAP_COLS && nextY >= 0 && nextY < MAP_ROWS) {
             const targetTile = map[Math.floor(nextY)][Math.floor(nextX)];
-            if (targetTile !== 2 && targetTile !== 3 && targetTile !== 5) { // Cannot walk on water, trees, or huts. Signs are not solid.
+            if (targetTile !== 2 && targetTile !== 3 && targetTile !== 5) {
                  player.x = nextX;
                  player.y = nextY;
-                 // Cancel any autopilot/path following when the player manually moves
                  player.path = null;
                  player.autoTarget = null;
-                 // user moved — switch from initial full-map view to player-centered
-                 initialView = false;
             }
         }
     }
@@ -2374,33 +2216,15 @@ function drawCrops(x, y) {
             }
         });
 
-        // Escape key cancels autopilot
         window.addEventListener('keydown', (ev) => {
             if (ev.key === 'Escape') {
                 cancelAutopilot();
             }
         });
-        // Start the game loop
+        
         render();
-
-        // DEBUG: print info about the sign the user reported at [29,31]
-        try {
-            const dbgX = 29, dbgY = 31;
-            if (dbgY >= 0 && dbgY < MAP_ROWS && dbgX >= 0 && dbgX < MAP_COLS) {
-                console.log('DEBUG: map[' + dbgY + '][' + dbgX + '] =', map[dbgY][dbgX]);
-                const it = interactives.find(o => Math.floor(o.x) === dbgX && Math.floor(o.y) === dbgY);
-                console.log('DEBUG: interactive at [29,31]:', it || 'none');
-            } else {
-                console.log('DEBUG: [29,31] outside map bounds');
-            }
-        } catch (e) {
-            console.error('DEBUG: error while checking tile', e);
-        }
-
-
     }
 
     init();
 });
-
 
