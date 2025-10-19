@@ -28,9 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cancel autopilot helper
     function cancelAutopilot() {
-        if (player.path && player.path.length > 0) {
-            console.log('Autopilot cancelled');
-        }
         player.path = null;
         player.autoTarget = null;
         player.moveTimer = 0;
@@ -119,6 +116,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let heightMap;
     let waterBodyMap;
     let largestWaterBodyId = -1;
+
+    // Ensure PROJECTS and CERTIFICATES signs are placed on the map
+    (function ensureSignsOnMap() {
+        const signPositions = [
+            { x: 46, y: 13, name: 'PROJECTS' },
+            { x: 46, y: 23, name: 'CERTIFICATES' },
+            { x: 28, y: 7, name: 'SKILLS' }
+        ];
+        
+        signPositions.forEach(pos => {
+            if (pos.y >= 0 && pos.y < MAP_ROWS && pos.x >= 0 && pos.x < MAP_COLS) {
+                map[pos.y][pos.x] = 6;
+            }
+        });
+    })();
 
     const player = {
         x: Math.floor(MAP_COLS / 2),
@@ -1602,7 +1614,6 @@ function drawCrops(x, y) {
             const fetchedHeader = root.querySelector('h1') ? root.querySelector('h1').textContent.trim() : title;
             const fetchedSubEl = root.querySelector('h2');
             const fetchedSubHTML = fetchedSubEl ? fetchedSubEl.innerHTML.trim() : '';
-            console.log('sign popup fetched h2 (subheader):', fetchedSubHTML);
             const fetchedChar = root.querySelector('.sign-detail-character');
             const fetchedText = root.querySelector('.sign-detail-text');
 
@@ -2179,7 +2190,6 @@ function drawCrops(x, y) {
                 player.path = path;
                 player.autoTarget = { x: targetX, y: targetY };
                 player.moveTimer = 0;
-                console.log('Autopilot started to', targetX, targetY, 'steps:', path.length);
                 return;
             }
 
@@ -2204,7 +2214,6 @@ function drawCrops(x, y) {
                 player.path = path;
                 player.autoTarget = { x: ix, y: iy };
                 player.moveTimer = 0;
-                console.log('Autopilot started to', ix, iy, 'steps:', path.length);
                 return;
             }
 
