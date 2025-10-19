@@ -1400,6 +1400,7 @@ function drawCrops(x, y) {
                 // Add objects to the draw queue
                 if (y === Math.floor(player.y) && x === Math.floor(player.x)) {
                     playerObject = {type: 'player', iso};
+                    objectsToDraw.push(playerObject);
                 }
                 
                 if (tileType === 3) {
@@ -1455,15 +1456,20 @@ function drawCrops(x, y) {
         }
 
         // --- Draw Objects and Player (sorted by Y for correct overlap) ---
-        // Sort objects so huts are drawn after the player (in front)
+        // Sort objects with custom depth ordering rules
         objectsToDraw.sort((a, b) => {
-            // If one is hut and the other is player, hut comes after
+            // Player is always in front of signs
+            if (a.type === 'player' && b.type === 'sign') return 1;
+            if (a.type === 'sign' && b.type === 'player') return -1;
+            
+            // Huts are drawn after the player (in front)
             if (a.type === 'player' && b.type === 'hut') return -1;
             if (a.type === 'hut' && b.type === 'player') return 1;
+            
+            // Default Y-ordering for all other objects
             return a.iso.y - b.iso.y;
         });
 
-        objectsToDraw.forEach(obj => {
         // Draw skills decor objects
         if (window.skillsDecorObjects) {
             // Position objects in a ring around the sign for visibility
@@ -1514,7 +1520,12 @@ function drawCrops(x, y) {
                 ctx.restore();
             });
         }
+
+        objectsToDraw.forEach(obj => {
             switch(obj.type) {
+                case 'player':
+                    drawPlayer(obj.iso.x, obj.iso.y);
+                    break;
                 case 'tree':
                     drawTree(obj.iso.x, obj.iso.y);
                     break;
@@ -1592,10 +1603,7 @@ function drawCrops(x, y) {
                 }
             });
 
-        // --- Final Pass: Draw Player on top ---
-        if (playerObject) {
-            drawPlayer(playerObject.iso.x, playerObject.iso.y);
-        }
+
 
 
         ctx.restore();
