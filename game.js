@@ -650,6 +650,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const scale = isHovered ? 1.2 : 1.0;
         
         ctx.save();
+        
+        // Apply scale transform if hovered
         if (isHovered) {
             ctx.translate(x, y);
             ctx.scale(scale, scale);
@@ -657,25 +659,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (part === 'full' || part === 'post') {
-            // Shadow
-            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            // Ground illumination effect when hovered
+            if (isHovered) {
+                const time = Date.now();
+                const pulseEffect = 0.7 + 0.3 * Math.sin(time / 400); // gentle ground glow
+                
+                // Ground illumination circle
+                const groundGradient = ctx.createRadialGradient(x, y + TILE_HEIGHT, 0, x, y + TILE_HEIGHT, 80 * pulseEffect);
+                groundGradient.addColorStop(0, 'rgba(255, 255, 220, 0.3)');
+                groundGradient.addColorStop(0.5, 'rgba(255, 255, 180, 0.2)');
+                groundGradient.addColorStop(1, 'rgba(255, 250, 150, 0)');
+                
+                ctx.fillStyle = groundGradient;
+                ctx.beginPath();
+                ctx.arc(x, y + TILE_HEIGHT, 80 * pulseEffect, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Shadow (enhanced when hovered for more dramatic effect)
+            const shadowOpacity = isHovered ? 0.4 : 0.2;
+            const shadowSize = isHovered ? boardWidth / 1.8 : boardWidth / 2;
+            ctx.fillStyle = `rgba(0,0,0,${shadowOpacity})`;
             ctx.beginPath();
-            ctx.ellipse(x, y + TILE_HEIGHT, boardWidth / 2, 8, 0, 0, Math.PI * 2);
+            ctx.ellipse(x, y + TILE_HEIGHT, shadowSize, 8, 0, 0, Math.PI * 2);
             ctx.fill();
             
-            // Post
-            ctx.fillStyle = postColor;
+            // Post (slightly brighter when illuminated)
+            ctx.fillStyle = isHovered ? shadeColor(postColor, 15) : postColor;
             ctx.fillRect(x - 4, y - 50, 8, 50 + TILE_HEIGHT);
         }
 
         if (part === 'full' || part === 'board') {
-            // Board
-            ctx.fillStyle = boardColor;
+            // Board glow effect when hovered
+            if (isHovered) {
+                // Outer glow around the sign board
+                ctx.shadowColor = 'rgba(255, 255, 220, 0.6)';
+                ctx.shadowBlur = 15;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+            }
+            
+            // Board (slightly brighter when hovered)
+            const currentBoardColor = isHovered ? shadeColor(boardColor, 20) : boardColor;
+            ctx.fillStyle = currentBoardColor;
             ctx.fillRect(x - boardWidth / 2, y - 55, boardWidth, boardHeight);
+            
+            // Reset shadow for border and text
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            
             ctx.strokeStyle = textColor; // White border
             ctx.lineWidth = 3;
             ctx.strokeRect(x - boardWidth / 2, y - 55, boardWidth, boardHeight);
 
+            // Text with subtle glow when hovered
+            if (isHovered) {
+                // Text glow effect
+                ctx.shadowColor = 'rgba(255, 255, 220, 0.8)';
+                ctx.shadowBlur = 8;
+            }
+            
             ctx.fillStyle = textColor; // White text
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
@@ -690,6 +733,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 measured = ctx.measureText(message).width;
             }
             ctx.fillText(message, x, y - 55 + boardHeight / 2);
+            
+            // Reset shadow after text
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
         }
         
         ctx.restore();
