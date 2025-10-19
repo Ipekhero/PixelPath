@@ -49,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let initialView = true; // true at start: show entire map fitted to canvas
     // When true, the camera will show the whole map (fit). When false, follow player.
     let fitMap = true;
+    let minZoomForMap = 1.0; // Track the minimum zoom that fits the entire map
+    let isAnimatingZoomOut = false; // Flag to bypass normal camera logic during zoom-out animation
 
     // --- Overlay: central path and city ---
     // Adds a vertical and horizontal path crossing the map center and a 5x5 city block.
@@ -1381,13 +1383,29 @@ function drawCrops(x, y) {
 
         ctx.save();
 
-        // Always fit the map to the screen - player is always visible
-        const centerIso = toIsometric((MAP_COLS - 1) / 2, (MAP_ROWS - 1) / 2);
-        camera.x = canvas.width / 2 - centerIso.x * zoom;
-        camera.y = canvas.height / 2 - centerIso.y * zoom;
-        
-        // Clamp camera to keep the entire map visible
-        clampCameraBounds();
+        // Determine if we should follow the player or show the whole map
+        // Skip camera repositioning during zoom-out animation to keep it smooth
+        if (!isAnimatingZoomOut) {
+            const isZoomedIn = zoom > minZoomForMap + 0.1; // More than just the fit zoom
+            
+            if (isZoomedIn) {
+                // Camera follows player - keep player centered
+                const playerIso = toIsometric(player.x, player.y);
+                camera.x = canvas.width / 2 - playerIso.x * zoom;
+                camera.y = canvas.height / 2 - playerIso.y * zoom;
+                
+                // Clamp camera to keep the entire map visible
+                clampCameraBounds();
+            } else {
+                // Show the whole map centered
+                const centerIso = toIsometric((MAP_COLS - 1) / 2, (MAP_ROWS - 1) / 2);
+                camera.x = canvas.width / 2 - centerIso.x * zoom;
+                camera.y = canvas.height / 2 - centerIso.y * zoom;
+                
+                // Clamp camera to keep the entire map visible
+                clampCameraBounds();
+            }
+        }
         
         ctx.translate(camera.x, camera.y);
         ctx.scale(zoom, zoom);
@@ -1797,8 +1815,53 @@ function drawCrops(x, y) {
     function hideSignPopup() {
         if (cinematicFocus) {
             cinematicFocus = null;
-            targetZoom = computeFitZoom();
         }
+        
+        // Set camera to full map view before animation starts
+        const endZoom = computeFitZoom();
+        const centerIso = toIsometric((MAP_COLS - 1) / 2, (MAP_ROWS - 1) / 2);
+        const targetCameraX = canvas.width / 2 - centerIso.x * endZoom;
+        const targetCameraY = canvas.height / 2 - centerIso.y * endZoom;
+        
+        // Store the current zoom to animate from
+        const startZoom = zoom;
+        const animationDuration = 800; // milliseconds (increased for slower animation)
+        const animationStartTime = Date.now();
+        
+        // Set animation flag to prevent camera repositioning during animation
+        isAnimatingZoomOut = true;
+        
+        // Create an animation loop for the zoom
+        function animateZoomOut() {
+            const elapsed = Date.now() - animationStartTime;
+            const progress = Math.min(elapsed / animationDuration, 1); // 0 to 1
+            
+            // Easing function for smooth animation (ease-out)
+            const easeProgress = 1 - Math.pow(1 - progress, 3);
+            
+            // Interpolate zoom level
+            zoom = startZoom + (endZoom - startZoom) * easeProgress;
+            targetZoom = zoom;
+            
+            // Interpolate camera position for smooth pan to center
+            camera.x = camera.x + (targetCameraX - camera.x) * easeProgress;
+            camera.y = camera.y + (targetCameraY - camera.y) * easeProgress;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animateZoomOut);
+            } else {
+                // Ensure final values are exactly set
+                zoom = endZoom;
+                targetZoom = endZoom;
+                minZoomForMap = computeFitZoom();
+                camera.x = targetCameraX;
+                camera.y = targetCameraY;
+                isAnimatingZoomOut = false; // Re-enable normal camera logic
+            }
+        }
+        
+        // Start the animation
+        animateZoomOut();
         
         // Hide the new detailed popup
         const detailPopup = document.getElementById('signDetailPopup');
@@ -2067,6 +2130,19 @@ function drawCrops(x, y) {
         targetZoom = zoom;
     }
 
+    function resetView() {
+        // Reset zoom to fit the entire map
+        const fitZoom = computeFitZoom();
+        zoom = fitZoom;
+        targetZoom = fitZoom;
+        minZoomForMap = fitZoom;
+        
+        // Reset camera to center on map
+        const centerIso = toIsometric((MAP_COLS - 1) / 2, (MAP_ROWS - 1) / 2);
+        camera.x = canvas.width / 2 - centerIso.x * fitZoom;
+        camera.y = canvas.height / 2 - centerIso.y * fitZoom;
+    }
+
     // --- Initialization ---
     function init() {
         // Set initial canvas size
@@ -2075,6 +2151,7 @@ function drawCrops(x, y) {
         // Always compute zoom to fit the whole map into the canvas
         targetZoom = computeFitZoom();
         zoom = targetZoom;
+        minZoomForMap = computeFitZoom(); // Store the zoom level that fits the entire map
 
         // Create the initial set of clouds
         initClouds();
@@ -2103,11 +2180,96 @@ function drawCrops(x, y) {
             resizeCanvas();
             // Recompute zoom whenever window is resized to keep map fully visible
             targetZoom = computeFitZoom();
+            minZoomForMap = computeFitZoom();
         });
 
         // Add zoom control listeners
         document.getElementById('zoomIn').addEventListener('click', zoomIn);
         document.getElementById('zoomOut').addEventListener('click', zoomOut);
+        document.getElementById('resetView').addEventListener('click', resetView);
+
+        // Add canvas click listener for autopilot to signs
+        canvas.addEventListener('click', (ev) => {
+            // Convert screen coordinates to map coordinates
+            function screenToMap(screenX, screenY) {
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = screenX - rect.left;
+                const canvasY = screenY - rect.top;
+
+                // undo camera translation and zoom to get isometric world coords
+                const worldIsoX = (canvasX - camera.x) / zoom;
+                const worldIsoY = (canvasY - camera.y) / zoom;
+
+                const a = TILE_WIDTH / 2;
+                const b = TILE_HEIGHT / 2;
+
+                const mapX = (worldIsoX / a + worldIsoY / b) / 2;
+                const mapY = (worldIsoY / b - worldIsoX / a) / 2;
+
+                return { x: mapX, y: mapY };
+            }
+
+            const m = screenToMap(ev.clientX, ev.clientY);
+            const ix = Math.floor(m.x);
+            const iy = Math.floor(m.y);
+            
+            if (ix < 0 || ix >= MAP_COLS || iy < 0 || iy >= MAP_ROWS) {
+                return;
+            }
+            
+            const tileType = map[iy][ix];
+            
+            // Helper function to check if click is near a sign (within 1.5 tiles)
+            const isNearSign = (signX, signY) => {
+                const dx = m.x - signX;
+                const dy = m.y - signY;
+                return Math.sqrt(dx * dx + dy * dy) <= 1.5;
+            };
+
+            // Check for nearby interactive objects (expanded clickable area)
+            let interactive = interactives.find(o => isNearSign(o.x, o.y));
+            const isSignTile = tileType === 6;
+
+            // If no interactive found nearby but current tile is a sign, find the exact sign
+            if (!interactive && isSignTile) {
+                interactive = interactives.find(o => Math.floor(o.x) === ix && Math.floor(o.y) === iy);
+            }
+
+            if (isSignTile || interactive) {
+                // Use the interactive's position if found, otherwise use clicked position
+                const targetX = interactive ? Math.floor(interactive.x) : ix;
+                const targetY = interactive ? Math.floor(interactive.y) : iy;
+                
+                // Try direct path first
+                let path = computePath(player.x, player.y, targetX, targetY);
+                if (path === null) {
+                    // Try to find nearest accessible approach tile
+                    path = findNearestAccessiblePath(player.x, player.y, targetX, targetY, 10);
+                }
+                if (path === null) {
+                    showMessage("No path to destination.");
+                    return;
+                }
+                if (path.length === 0) {
+                    // Already standing on the tile - open immediately
+                    handleInteraction();
+                    return;
+                }
+                // Start autopilot
+                player.path = path;
+                player.autoTarget = { x: targetX, y: targetY };
+                player.moveTimer = 0;
+                console.log('Autopilot started to', targetX, targetY, 'steps:', path.length);
+                return;
+            }
+
+            // Fallback: show general messages for other tile types
+            if (messages[tileType]) {
+                showMessage(messages[tileType]);
+            } else {
+                if (interactive) showMessage(interactive.message);
+            }
+        });
 
         // Escape key cancels autopilot
         window.addEventListener('keydown', (ev) => {
