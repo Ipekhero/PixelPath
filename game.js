@@ -599,12 +599,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const isoMaxY = (cols - 1 + rows - 1) * (TILE_HEIGHT / 2);
         const mapHeight = isoMaxY + TILE_HEIGHT; // add vertical margin
 
-        const margin = 80; // pixels
+        const margin = 40; // reduced margin to maximize visible area
         const fitX = (canvas.width - margin) / mapWidth;
         const fitY = (canvas.height - margin) / mapHeight;
         const fit = Math.min(fitX, fitY);
-        // Clamp to reasonable range
-        return Math.max(0.1, Math.min(fit, 3.0));
+        // Clamp to reasonable range - prioritize fitting the whole map
+        return Math.max(0.05, Math.min(fit, 3.0));
+    }
+
+    // Calculate camera bounds to keep the entire map visible
+    function clampCameraBounds() {
+        const cols = MAP_COLS;
+        const rows = MAP_ROWS;
+        
+        // Calculate map corners in isometric space
+        const topLeft = toIsometric(0, 0);
+        const topRight = toIsometric(cols - 1, 0);
+        const bottomLeft = toIsometric(0, rows - 1);
+        const bottomRight = toIsometric(cols - 1, rows - 1);
+        
+        // Find the bounding box of the map in isometric space
+        const minMapX = Math.min(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x);
+        const maxMapX = Math.max(topLeft.x, topRight.x, bottomLeft.x, bottomRight.x);
+        const minMapY = Math.min(topLeft.y, topRight.y, bottomLeft.y, bottomRight.y);
+        const maxMapY = Math.max(topLeft.y, topRight.y, bottomLeft.y, bottomRight.y);
+        
+        // Calculate the camera limits to keep the entire map visible
+        const maxCameraX = canvas.width / 2 - minMapX * zoom;
+        const minCameraX = canvas.width / 2 - maxMapX * zoom;
+        const maxCameraY = canvas.height / 2 - minMapY * zoom;
+        const minCameraY = canvas.height / 2 - maxMapY * zoom;
+        
+        // Clamp the camera position
+        camera.x = Math.min(maxCameraX, Math.max(minCameraX, camera.x));
+        camera.y = Math.min(maxCameraY, Math.max(minCameraY, camera.y));
     }
 
     // Convert 2D map coordinates to isometric screen coordinates
@@ -1353,25 +1381,13 @@ function drawCrops(x, y) {
 
         ctx.save();
 
-        // Center camera: decide between cinematic focus, fitMap (show whole map), or follow player
-        if (cinematicFocus) {
-            // Center camera between player and the sign for cinematic effect
-            const midX = (cinematicFocus.player.x + cinematicFocus.target.x) / 2;
-            const midY = (cinematicFocus.player.y + cinematicFocus.target.y) / 2;
-            const midIso = toIsometric(midX, midY);
-            camera.x = canvas.width / 2 - midIso.x * zoom;
-            camera.y = canvas.height / 2 - midIso.y * zoom;
-        } else if (fitMap || initialView) {
-            // center on map midpoint (fit)
-            const centerIso = toIsometric((MAP_COLS - 1) / 2, (MAP_ROWS - 1) / 2);
-            camera.x = canvas.width / 2 - centerIso.x * zoom;
-            camera.y = canvas.height / 2 - centerIso.y * zoom;
-        } else {
-            // Center on player
-            const playerIso = toIsometric(player.x, player.y);
-            camera.x = canvas.width / 2 - playerIso.x * zoom;
-            camera.y = canvas.height / 2 - playerIso.y * zoom;
-        }
+        // Always fit the map to the screen - player is always visible
+        const centerIso = toIsometric((MAP_COLS - 1) / 2, (MAP_ROWS - 1) / 2);
+        camera.x = canvas.width / 2 - centerIso.x * zoom;
+        camera.y = canvas.height / 2 - centerIso.y * zoom;
+        
+        // Clamp camera to keep the entire map visible
+        clampCameraBounds();
         
         ctx.translate(camera.x, camera.y);
         ctx.scale(zoom, zoom);
@@ -2045,7 +2061,9 @@ function drawCrops(x, y) {
     }
 
     function zoomOut() {
-        zoom = Math.max(zoom - 0.2, 0.1); // Min zoom 0.1 (allow fitting smaller maps)
+        const fitZoom = computeFitZoom();
+        // Prevent zooming out below the fit-to-screen zoom level
+        zoom = Math.max(zoom - 0.2, fitZoom);
         targetZoom = zoom;
     }
 
@@ -2054,7 +2072,7 @@ function drawCrops(x, y) {
         // Set initial canvas size
         resizeCanvas();
 
-        // Compute and set initial fitted zoom so the whole map is visible on start
+        // Always compute zoom to fit the whole map into the canvas
         targetZoom = computeFitZoom();
         zoom = targetZoom;
 
@@ -2081,29 +2099,15 @@ function drawCrops(x, y) {
 
         // Add listeners
         window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('resize', resizeCanvas); // Resize canvas when window size changes
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            // Recompute zoom whenever window is resized to keep map fully visible
+            targetZoom = computeFitZoom();
+        });
 
         // Add zoom control listeners
         document.getElementById('zoomIn').addEventListener('click', zoomIn);
         document.getElementById('zoomOut').addEventListener('click', zoomOut);
-        // Fit vs Follow toggle
-        const toggleBtn = document.getElementById('toggleView');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
-                fitMap = !fitMap;
-                // Update button text to reflect next action
-                toggleBtn.textContent = fitMap ? 'Fit map' : 'Follow player';
-                // When switching to fit, recompute zoom and center immediately
-                if (fitMap) {
-                    targetZoom = computeFitZoom();
-                    zoom = targetZoom;
-                    initialView = true;
-                } else {
-                    initialView = false;
-                }
-                requestAnimationFrame(render);
-            });
-        }
 
         // Escape key cancels autopilot
         window.addEventListener('keydown', (ev) => {
@@ -2128,113 +2132,7 @@ function drawCrops(x, y) {
             console.error('DEBUG: error while checking tile', e);
         }
 
-        // --- Mouse debug overlay (added helper) ---
-        (function addMouseDebugOverlay() {
-            // Helper: convert screen (client) coordinates -> map (tile) fractional coordinates
-            function screenToMap(screenX, screenY) {
-                const rect = canvas.getBoundingClientRect();
-                const canvasX = screenX - rect.left;
-                const canvasY = screenY - rect.top;
 
-                // undo camera translation and zoom to get isometric world coords
-                const worldIsoX = (canvasX - camera.x) / zoom;
-                const worldIsoY = (canvasY - camera.y) / zoom;
-
-                const a = TILE_WIDTH / 2;
-                const b = TILE_HEIGHT / 2;
-
-                const mapX = (worldIsoX / a + worldIsoY / b) / 2;
-                const mapY = (worldIsoY / b - worldIsoX / a) / 2;
-
-                return { x: mapX, y: mapY };
-            }
-
-            const dbg = document.createElement('div');
-            dbg.id = 'debugTileCoords';
-            dbg.style.position = 'fixed';
-            dbg.style.right = '8px';
-            dbg.style.bottom = '8px';
-            dbg.style.padding = '6px 8px';
-            dbg.style.background = 'rgba(0,0,0,0.6)';
-            dbg.style.color = '#fff';
-            dbg.style.font = '12px monospace';
-            dbg.style.zIndex = 9999;
-            dbg.style.pointerEvents = 'none';
-            document.body.appendChild(dbg);
-
-            canvas.addEventListener('mousemove', (ev) => {
-                const m = screenToMap(ev.clientX, ev.clientY);
-                const ix = Math.floor(m.x);
-                const iy = Math.floor(m.y);
-                dbg.textContent = `map: (${m.x.toFixed(2)}, ${m.y.toFixed(2)})  tile: [${ix}, ${iy}]`;
-            });
-
-            canvas.addEventListener('click', (ev) => {
-                const m = screenToMap(ev.clientX, ev.clientY);
-                const ix = Math.floor(m.x);
-                const iy = Math.floor(m.y);
-                if (ix < 0 || ix >= MAP_COLS || iy < 0 || iy >= MAP_ROWS) {
-                    console.log('Clicked outside map');
-                    return;
-                }
-                const tileType = map[iy][ix];
-                console.log('Clicked tile coord:', ix, iy, 'tileType:', tileType);
-
-                // Helper function to check if click is near a sign (within 1.5 tiles)
-                const isNearSign = (signX, signY) => {
-                    const dx = m.x - signX;
-                    const dy = m.y - signY;
-                    return Math.sqrt(dx * dx + dy * dy) <= 1.5;
-                };
-
-                // If user clicked a sign or an interactive, start autopilot to it
-                // Check for nearby interactive objects (expanded clickable area)
-                let interactive = interactives.find(o => isNearSign(o.x, o.y));
-                const isSignTile = tileType === 6;
-
-                // If no interactive found nearby but current tile is a sign, find the exact sign
-                if (!interactive && isSignTile) {
-                    interactive = interactives.find(o => Math.floor(o.x) === ix && Math.floor(o.y) === iy);
-                }
-
-                if (isSignTile || interactive) {
-                    // Use the interactive's position if found, otherwise use clicked position
-                    const targetX = interactive ? Math.floor(interactive.x) : ix;
-                    const targetY = interactive ? Math.floor(interactive.y) : iy;
-                    
-                    // Try direct path first
-                    let path = computePath(player.x, player.y, targetX, targetY);
-                    if (path === null) {
-                        // Try to find nearest accessible approach tile
-                        path = findNearestAccessiblePath(player.x, player.y, targetX, targetY, 10);
-                    }
-                    if (path === null) {
-                        showMessage("No path to destination.");
-                        return;
-                    }
-                    if (path.length === 0) {
-                        // Already standing on the tile - open immediately
-                        handleInteraction();
-                        return;
-                    }
-                    // Start autopilot
-                    player.path = path;
-                    player.autoTarget = { x: targetX, y: targetY };
-                    player.moveTimer = 0;
-                    // Switch view to player-centered follow
-                    initialView = false;
-                    console.log('Autopilot started to', targetX, targetY, 'steps:', path.length);
-                    return;
-                }
-
-                // Fallback: show general messages for other tile types
-                if (messages[tileType]) {
-                    showMessage(messages[tileType]);
-                } else {
-                    if (interactive) showMessage(interactive.message);
-                }
-            });
-        })();
     }
 
     init();
