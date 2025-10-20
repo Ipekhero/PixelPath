@@ -522,6 +522,102 @@ canvas {
     border-radius: 8px;
 }
 
+/* Mobile-specific styles for Projects and Skills to prevent horizontal scrolling */
+@media (max-width: 768px) {
+    /* Projects gallery - stack vertically on mobile */
+    .projects-inline-gallery {
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: center !important;
+        margin-top: 6px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .projects-inline-gallery a img {
+        width: 100% !important;
+        max-width: 280px !important;
+        height: auto !important;
+        aspect-ratio: 5/3; /* Maintain aspect ratio */
+        object-fit: cover !important;
+    }
+    
+    /* Transferable skills - better wrapping */
+    .transferable-list {
+        gap: 6px 8px !important;
+        margin: 2px 0 8px 0 !important;
+    }
+    
+    .transferable-link {
+        font-size: 11px !important;
+        padding: 3px 6px !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+        word-break: break-word !important;
+        hyphens: auto !important;
+    }
+    
+    /* Tools list - better wrapping */
+    .tools-list {
+        gap: 4px 6px !important;
+        margin: 0 0 6px 0 !important;
+    }
+    
+    .tools-list li {
+        font-size: 11px !important;
+        padding: 2px 4px !important;
+        word-break: break-word !important;
+    }
+    
+    /* Language flags and names - more compact */
+    .language-list {
+        gap: 2px !important;
+        margin-top: 2px !important;
+    }
+    
+    .lang-item {
+        gap: 6px !important;
+        align-items: center !important;
+    }
+    
+    .lang-name {
+        font-size: 11px !important;
+        line-height: 1.2 !important;
+        word-break: break-word !important;
+    }
+    
+    .flag-pixel {
+        width: 18px !important;
+        height: 12px !important;
+        flex-shrink: 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Even more compact for very small screens */
+    .projects-inline-gallery a img {
+        max-width: 240px !important;
+    }
+    
+    .transferable-link {
+        font-size: 10px !important;
+        padding: 2px 4px !important;
+    }
+    
+    .tools-list li {
+        font-size: 10px !important;
+        padding: 2px 3px !important;
+    }
+    
+    .lang-name {
+        font-size: 10px !important;
+    }
+    
+    .flag-pixel {
+        width: 16px !important;
+        height: 11px !important;
+    }
+}
+
 .sign-detail-cta {
     margin: 20px;
     padding: 10px 22px;
