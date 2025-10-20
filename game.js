@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isAnimatingZoomOut = false;
     let mousePos = { x: 0, y: 0 };
     let hoveredSignTile = null;
+    let prePopupZoom = 1.0; // Store zoom level before entering popup
     const interactives = [
         { x: 29, y: 31, message: 'EXPERIENCE', filename: 'sign-experience.html' },
         { x: 4,  y: 8,  message: 'FUN',        filename: 'sign-fun.html' },
@@ -1772,11 +1773,23 @@ function drawCrops(x, y) {
             cinematicFocus = null;
         }
         
-        // Set camera to full map view before animation starts
-        const endZoom = computeFitZoom();
-        const centerIso = toIsometric((MAP_COLS - 1) / 2, (MAP_ROWS - 1) / 2);
-        const targetCameraX = canvas.width / 2 - centerIso.x * endZoom;
-        const targetCameraY = canvas.height / 2 - centerIso.y * endZoom;
+        // Restore to the zoom level that was active before entering the popup
+        const endZoom = prePopupZoom;
+        
+        // Determine camera position based on zoom level
+        let targetCameraX, targetCameraY;
+        
+        if (endZoom > minZoomForMap + 0.1) {
+            // If returning to a zoomed-in state, center on player
+            const playerIso = toIsometric(player.x, player.y);
+            targetCameraX = canvas.width / 2 - playerIso.x * endZoom;
+            targetCameraY = canvas.height / 2 - playerIso.y * endZoom;
+        } else {
+            // If returning to map view, center on map
+            const centerIso = toIsometric((MAP_COLS - 1) / 2, (MAP_ROWS - 1) / 2);
+            targetCameraX = canvas.width / 2 - centerIso.x * endZoom;
+            targetCameraY = canvas.height / 2 - centerIso.y * endZoom;
+        }
         
         // Store the current zoom to animate from
         const startZoom = zoom;
@@ -1808,7 +1821,6 @@ function drawCrops(x, y) {
                 // Ensure final values are exactly set
                 zoom = endZoom;
                 targetZoom = endZoom;
-                minZoomForMap = computeFitZoom();
                 camera.x = targetCameraX;
                 camera.y = targetCameraY;
                 isAnimatingZoomOut = false; // Re-enable normal camera logic
@@ -1888,6 +1900,10 @@ function drawCrops(x, y) {
                     function slugify(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
                     const defaultMsg = messages[6];
                     const signData = interactiveSign || { message: defaultMsg, filename: `sign-${slugify(defaultMsg)}.html` };
+                    
+                    // Store current zoom level before entering popup
+                    prePopupZoom = zoom;
+                    
                     cinematicFocus = { player: { x: player.x, y: player.y }, target: { x: tileX, y: tileY } };
                     targetZoom = 2.5;
                     showSignPopup(signData);
