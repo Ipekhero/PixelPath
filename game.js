@@ -4,6 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     const ctx = canvas.getContext('2d');
+    
+    // Configure canvas for crisp rendering and eliminate tile grid lines
+    ctx.imageSmoothingEnabled = false; // Disable smoothing to prevent blurry edges
+    ctx.webkitImageSmoothingEnabled = false; // Safari specific
+    ctx.mozImageSmoothingEnabled = false; // Firefox specific
+    ctx.msImageSmoothingEnabled = false; // IE/Edge specific
+    // Disable any potential stroke styling that might show grid lines
+    ctx.lineWidth = 0;
+    ctx.strokeStyle = 'transparent';
     const messageBox = document.getElementById('messageBox');
     const messageText = document.getElementById('messageText');
     const overlay = document.getElementById('overlay');
@@ -530,40 +539,51 @@ document.addEventListener('DOMContentLoaded', () => {
     function toIsometric(x, y) {
         const isoX = (x - y) * (TILE_WIDTH / 2);
         const isoY = (x + y) * (TILE_HEIGHT / 2);
-        return { x: isoX, y: isoY };
+        // Round to prevent sub-pixel positioning that causes grid lines
+        return { x: Math.round(isoX), y: Math.round(isoY) };
     }
 
     // --- Drawing Functions ---
 
     function drawTile(x, y, color, highlight = '#ffffff') {
         ctx.save();
-        ctx.translate(x, y);
+        
+        // Round coordinates to prevent sub-pixel rendering
+        const roundedX = Math.round(x);
+        const roundedY = Math.round(y);
+        ctx.translate(roundedX, roundedY);
 
+        // Add slight overlap to prevent gaps
+        const overlap = 1;
+        const tileW = TILE_WIDTH + overlap;
+        const tileH = TILE_HEIGHT + overlap;
+
+        // Top face with overlap
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.lineTo(TILE_WIDTH / 2, TILE_HEIGHT / 2);
-        ctx.lineTo(0, TILE_HEIGHT);
-        ctx.lineTo(-TILE_WIDTH / 2, TILE_HEIGHT / 2);
+        ctx.lineTo(tileW / 2, tileH / 2);
+        ctx.lineTo(0, tileH);
+        ctx.lineTo(-tileW / 2, tileH / 2);
         ctx.closePath();
         ctx.fillStyle = color;
         ctx.fill();
         
-        // Left face
+        // Left face with overlap
         ctx.beginPath();
-        ctx.moveTo(-TILE_WIDTH / 2, TILE_HEIGHT / 2);
-        ctx.lineTo(0, TILE_HEIGHT);
-        ctx.lineTo(0, TILE_HEIGHT + TILE_HEIGHT);
-        ctx.lineTo(-TILE_WIDTH / 2, TILE_HEIGHT / 2 + TILE_HEIGHT);
+        ctx.moveTo(-tileW / 2, tileH / 2);
+        ctx.lineTo(0, tileH);
+        ctx.lineTo(0, tileH + tileH);
+        ctx.lineTo(-tileW / 2, tileH / 2 + tileH);
         ctx.closePath();
         ctx.fillStyle = shadeColor(color, -20);
         ctx.fill();
 
-        // Right face
+        // Right face with overlap
         ctx.beginPath();
-        ctx.moveTo(TILE_WIDTH / 2, TILE_HEIGHT / 2);
-        ctx.lineTo(0, TILE_HEIGHT);
-        ctx.lineTo(0, TILE_HEIGHT + TILE_HEIGHT);
-        ctx.lineTo(TILE_WIDTH / 2, TILE_HEIGHT / 2 + TILE_HEIGHT);
+        ctx.moveTo(tileW / 2, tileH / 2);
+        ctx.lineTo(0, tileH);
+        ctx.lineTo(0, tileH + tileH);
+        ctx.lineTo(tileW / 2, tileH / 2 + tileH);
         ctx.closePath();
         ctx.fillStyle = shadeColor(color, -40);
         ctx.fill();
