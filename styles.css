@@ -236,7 +236,7 @@ canvas {
     border-radius: 140px;
     width: 700px;
     height: 320px;
-    filter: drop-shadow(0 15px 40px rgba(124, 186, 90, 0.4));
+    filter: drop-shadow(0 15px 40px rgba(134, 233, 80, 0.96));
     animation: cloudFloat 6s ease-in-out infinite;
 }
 
@@ -360,30 +360,6 @@ canvas {
         transform: scale(1.05);
         background: rgba(124, 186, 90, 0.2);
         box-shadow: 0 0 15px rgba(124, 186, 90, 0.4);
-    }
-}
-
-
-
-/* Auto-hide after animation completes */
-.welcome-cloud.auto-hide {
-    animation: cloudDriftFast 15s linear forwards;
-}
-
-@keyframes cloudDriftFast {
-    0% {
-        left: -600px;
-        opacity: 0;
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        left: calc(100vw + 200px);
-        opacity: 0;
     }
 }
 
