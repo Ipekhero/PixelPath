@@ -1658,6 +1658,64 @@ function drawCrops(x, y) {
         messageVisible = false;
     }
 
+    function showToast(text, duration = 2000) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 2px solid #fff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            z-index: 1000;
+            animation: toastFadeIn 0.3s ease-out;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        `;
+        toast.textContent = text;
+        document.body.appendChild(toast);
+        
+        // Add animation to styles if not already there
+        if (!document.getElementById('toastAnimation')) {
+            const style = document.createElement('style');
+            style.id = 'toastAnimation';
+            style.textContent = `
+                @keyframes toastFadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                }
+                @keyframes toastFadeOut {
+                    from {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                    to {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(20px);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        setTimeout(() => {
+            toast.style.animation = 'toastFadeOut 0.3s ease-out forwards';
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, duration);
+    }
+
     async function showSignPopup(signData) {
         const title = signData.message || signData.title || 'Sign';
         const detailPopup = document.getElementById('signDetailPopup');
@@ -2384,7 +2442,13 @@ function drawCrops(x, y) {
                 return;
             }
 
-            // Show messages for non-walkable tiles
+            // Show toast for water
+            if (tileType === 2) {
+                showToast("Splash! Walking on water isn't allowed!");
+                return;
+            }
+
+            // Show messages for other non-walkable tiles
             if (messages[tileType]) {
                 showMessage(messages[tileType]);
             } else {
