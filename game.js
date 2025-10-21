@@ -1793,7 +1793,9 @@ function drawCrops(x, y) {
         
         // Store the current zoom to animate from
         const startZoom = zoom;
-        const animationDuration = 800; // milliseconds (increased for slower animation)
+        const startCameraX = camera.x;
+        const startCameraY = camera.y;
+        const animationDuration = 1200; // milliseconds - smooth duration
         const animationStartTime = Date.now();
         
         // Set animation flag to prevent camera repositioning during animation
@@ -1804,16 +1806,16 @@ function drawCrops(x, y) {
             const elapsed = Date.now() - animationStartTime;
             const progress = Math.min(elapsed / animationDuration, 1); // 0 to 1
             
-            // Easing function for smooth animation (ease-out)
+            // Easing function for smooth animation (ease-out cubic)
             const easeProgress = 1 - Math.pow(1 - progress, 3);
             
             // Interpolate zoom level
             zoom = startZoom + (endZoom - startZoom) * easeProgress;
             targetZoom = zoom;
             
-            // Interpolate camera position for smooth pan to center
-            camera.x = camera.x + (targetCameraX - camera.x) * easeProgress;
-            camera.y = camera.y + (targetCameraY - camera.y) * easeProgress;
+            // Interpolate camera position from start to target (not incremental)
+            camera.x = startCameraX + (targetCameraX - startCameraX) * easeProgress;
+            camera.y = startCameraY + (targetCameraY - startCameraY) * easeProgress;
             
             if (progress < 1) {
                 requestAnimationFrame(animateZoomOut);

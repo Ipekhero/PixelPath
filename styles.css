@@ -63,11 +63,8 @@ canvas {
 
 @keyframes zoomIn {
     0% {
-        transform: translate(-50%, -50%) scale(0.3);
+        transform: translate(-50%, -50%) scale(0.7);
         opacity: 0;
-    }
-    50% {
-        opacity: 1;
     }
     100% {
         transform: translate(-50%, -50%) scale(1);
@@ -80,7 +77,7 @@ canvas {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0.3);
+    transform: translate(-50%, -50%) scale(0.7);
     background-color: #FFFFFF;
     color: #333;
     padding: var(--popup-image-padding);
@@ -99,7 +96,7 @@ canvas {
 }
 
 #signPopup.active {
-    animation: zoomIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: zoomIn 0.8s ease-out forwards;
 }
 
 #signPopup h2 {
@@ -472,7 +469,7 @@ canvas {
     justify-content: center;
     align-items: center;
     opacity: 0;
-    transition: opacity 0.2s steps(4);
+    transition: opacity 0.5s ease-out;
     image-rendering: pixelated;
 }
 
@@ -491,16 +488,13 @@ canvas {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    animation: pixelPop 0.3s steps(6);
+    animation: pixelPop 0.6s ease-out;
 }
 
 @keyframes pixelPop {
     0% {
-        transform: scale(0.5);
+        transform: scale(0.8);
         opacity: 0;
-    }
-    50% {
-        transform: scale(1.05);
     }
     100% {
         transform: scale(1);
