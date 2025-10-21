@@ -2109,6 +2109,64 @@ function drawCrops(x, y) {
         camera.y = canvas.height / 2 - centerIso.y * fitZoom;
     }
 
+    // --- Welcome Cloud ---
+    let welcomeCloudTimeout = null;
+    let gameStartSequenceActive = false;
+    
+    function showWelcomeCloud() {
+        const welcomeCloud = document.getElementById('welcomeCloud');
+        
+        welcomeCloud.style.display = 'block';
+        messageVisible = true;
+        gameStartSequenceActive = true;
+        
+        // Cloud stays stationary until user clicks the CTA button
+        // No automatic movement or hiding - user has full control
+    }
+    
+    function startCloudMovement() {
+        const welcomeCloud = document.getElementById('welcomeCloud');
+        welcomeCloud.classList.add('start-moving');
+        
+        // Cloud will disappear after 15 seconds of movement
+        setTimeout(() => {
+            if (gameStartSequenceActive) {
+                startGameSequence();
+            }
+        }, 15000);
+    }
+    
+    function hideWelcomeCloud() {
+        if (!gameStartSequenceActive) return;
+        
+        // Clear auto-hide timeout
+        if (welcomeCloudTimeout) {
+            clearTimeout(welcomeCloudTimeout);
+            welcomeCloudTimeout = null;
+        }
+        
+        // Start immediate game sequence
+        startGameSequence();
+    }
+    
+    function hideWelcomeCloudAuto() {
+        if (!gameStartSequenceActive) return;
+        startCloudMovement();
+    }
+    
+    function startGameSequence() {
+        if (!gameStartSequenceActive) return;
+        
+        gameStartSequenceActive = false;
+        const welcomeCloud = document.getElementById('welcomeCloud');
+        
+        // Hide welcome cloud immediately
+        welcomeCloud.style.display = 'none';
+        
+        // Set messageVisible to false
+        messageVisible = false;
+    }
+
     // --- Initialization ---
     function init() {
         // Set initial canvas size
@@ -2119,7 +2177,7 @@ function drawCrops(x, y) {
         zoom = targetZoom;
         minZoomForMap = computeFitZoom(); // Store the zoom level that fits the entire map
 
-        // Create the initial set of clouds
+        // Create the initial set of clouds - they should always be moving
         initClouds();
 
         // Generate the terrain heightmap
@@ -2153,6 +2211,22 @@ function drawCrops(x, y) {
         document.getElementById('zoomIn').addEventListener('click', zoomIn);
         document.getElementById('zoomOut').addEventListener('click', zoomOut);
         document.getElementById('resetView').addEventListener('click', resetView);
+        
+        // Add welcome cloud listeners
+        const welcomeCloud = document.getElementById('welcomeCloud');
+        
+        // Hide cloud when clicking on it
+        welcomeCloud.addEventListener('click', hideWelcomeCloud);
+        
+        // Also hide when pressing Space or Enter (only while cloud is visible)
+        const handleWelcomeKeydown = (e) => {
+            if (messageVisible && (e.key === ' ' || e.key === 'Enter' || e.key === 'Escape')) {
+                e.preventDefault();
+                hideWelcomeCloud();
+                window.removeEventListener('keydown', handleWelcomeKeydown);
+            }
+        };
+        window.addEventListener('keydown', handleWelcomeKeydown);
 
         // Add mouse move listener to track hovered signs
         canvas.addEventListener('mousemove', (ev) => {
@@ -2323,6 +2397,9 @@ function drawCrops(x, y) {
         });
         
         render();
+        
+        // Show welcome cloud after everything is initialized
+        showWelcomeCloud();
     }
 
     init();
