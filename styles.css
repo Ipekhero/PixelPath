@@ -235,6 +235,7 @@ canvas {
     height: 320px;
     filter: drop-shadow(0 15px 40px rgba(134, 233, 80, 0.96));
     animation: cloudFloat 6s ease-in-out infinite;
+    max-width: 90vw;
 }
 
 @keyframes cloudFloat {
@@ -278,6 +279,7 @@ canvas {
     text-align: center;
     padding: 30px;
     width: 580px;
+    max-width: 85vw;
     z-index: 1;
 }
 

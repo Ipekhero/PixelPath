@@ -239,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const clouds = [];
     const NUM_CLOUDS = 15;
+    let toastActive = false; // Track if a toast is currently visible
 
     function initClouds() {
         for (let i = 0; i < NUM_CLOUDS; i++) {
@@ -1016,8 +1017,8 @@ function drawCrops(x, y) {
         ctx.translate(x, y);
 
         const colors = ['#FF1493', '#00BFFF', '#FFD700', '#ADFF2F', '#FF4500']; // DeepPink, DeepSkyBlue, Gold, GreenYellow, OrangeRed
-        const numChecksX = 6;
-        const numChecksY = 6;
+        const numChecksX = 4;
+        const numChecksY = 3;
 
         const stepX = TILE_WIDTH / numChecksX;
         const stepY = TILE_HEIGHT / numChecksY;
@@ -1028,9 +1029,9 @@ function drawCrops(x, y) {
                 const isoX = (i - j) * (stepX / 2);
                 const isoY = (i + j) * (stepY / 2);
 
-                // Center the pattern
+                // Center the pattern and keep it within the tile bounds
                 const centeredX = isoX - TILE_WIDTH / 2 + stepX / 2;
-                const centeredY = isoY;
+                const centeredY = isoY + TILE_HEIGHT / 2; // Keep pattern in lower half of tile
 
                 ctx.fillStyle = colors[(i + j) % colors.length];
 
@@ -1483,6 +1484,10 @@ function drawCrops(x, y) {
             if (a.type === 'player' && b.type === 'sign') return 1;
             if (a.type === 'sign' && b.type === 'player') return -1;
             
+            // Player is always in front of circus tiles
+            if (a.type === 'player' && b.type === 'circus') return 1;
+            if (a.type === 'circus' && b.type === 'player') return -1;
+            
             // Huts are drawn after the player (in front)
             if (a.type === 'player' && b.type === 'hut') return -1;
             if (a.type === 'hut' && b.type === 'player') return 1;
@@ -1659,6 +1664,10 @@ function drawCrops(x, y) {
     }
 
     function showToast(text, duration = 2000) {
+        // Prevent duplicate toasts
+        if (toastActive) return;
+        
+        toastActive = true;
         const toast = document.createElement('div');
         toast.style.cssText = `
             position: fixed;
@@ -1712,6 +1721,7 @@ function drawCrops(x, y) {
             toast.style.animation = 'toastFadeOut 0.3s ease-out forwards';
             setTimeout(() => {
                 document.body.removeChild(toast);
+                toastActive = false; // Mark toast as inactive after it's removed
             }, 300);
         }, duration);
     }
