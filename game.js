@@ -1992,6 +1992,10 @@ function drawCrops(x, y) {
             case 'Down': nextX += 1; nextY += 1; break;
             case 'Left': nextX -= 1; nextY += 1; break;
             case 'Right': nextX += 1; nextY -= 1; break;
+            case 'UpLeft': nextX -= 1; nextY -= 1; break;  // diagonal
+            case 'UpRight': nextX += 1; nextY -= 1; break;  // diagonal
+            case 'DownLeft': nextX -= 1; nextY += 1; break;  // diagonal
+            case 'DownRight': nextX += 1; nextY += 1; break;  // diagonal
         }
         return { x: nextX, y: nextY };
     }
@@ -2116,6 +2120,14 @@ function drawCrops(x, y) {
     }
 
     // --- Controls ---
+    // Track which keys are currently pressed for diagonal movement support
+    const keysPressed = {
+        'ArrowUp': false,
+        'ArrowDown': false,
+        'ArrowLeft': false,
+        'ArrowRight': false
+    };
+
     function handleKeyDown(e) {
         if (e.key === ' ') { // Spacebar
             e.preventDefault();
@@ -2125,24 +2137,53 @@ function drawCrops(x, y) {
 
         if (messageVisible) return; // Don't move if any message is open
 
-        const directionMap = {
-            'ArrowUp': 'Up', 'ArrowDown': 'Down',
-            'ArrowLeft': 'Left', 'ArrowRight': 'Right'
-        };
-        const direction = directionMap[e.key];
-        if (!direction) return;
-
-        const { x: nextX, y: nextY } = getNextCoord(player.x, player.y, direction);
-        
-        // Collision Detection
-        if (nextX >= 0 && nextX < MAP_COLS && nextY >= 0 && nextY < MAP_ROWS) {
-            const targetTile = map[Math.floor(nextY)][Math.floor(nextX)];
-            if (targetTile !== 2 && targetTile !== 3 && targetTile !== 5) {
-                 player.x = nextX;
-                 player.y = nextY;
-                 player.path = null;
-                 player.autoTarget = null;
+        // Track arrow keys for diagonal movement
+        if (e.key in keysPressed) {
+            keysPressed[e.key] = true;
+            e.preventDefault();
+            
+            // Determine direction based on which keys are pressed
+            let direction = null;
+            if (keysPressed['ArrowUp'] && keysPressed['ArrowLeft']) {
+                direction = 'UpLeft';
+            } else if (keysPressed['ArrowUp'] && keysPressed['ArrowRight']) {
+                direction = 'UpRight';
+            } else if (keysPressed['ArrowDown'] && keysPressed['ArrowLeft']) {
+                direction = 'DownLeft';
+            } else if (keysPressed['ArrowDown'] && keysPressed['ArrowRight']) {
+                direction = 'DownRight';
+            } else if (keysPressed['ArrowUp']) {
+                direction = 'Up';
+            } else if (keysPressed['ArrowDown']) {
+                direction = 'Down';
+            } else if (keysPressed['ArrowLeft']) {
+                direction = 'Left';
+            } else if (keysPressed['ArrowRight']) {
+                direction = 'Right';
             }
+            
+            if (direction) {
+                const { x: nextX, y: nextY } = getNextCoord(player.x, player.y, direction);
+                
+                // Collision Detection
+                if (nextX >= 0 && nextX < MAP_COLS && nextY >= 0 && nextY < MAP_ROWS) {
+                    const targetTile = map[Math.floor(nextY)][Math.floor(nextX)];
+                    if (targetTile !== 2 && targetTile !== 3 && targetTile !== 5) {
+                         player.x = nextX;
+                         player.y = nextY;
+                         player.path = null;
+                         player.autoTarget = null;
+                    }
+                }
+            }
+            return;
+        }
+    }
+    
+    function handleKeyUp(e) {
+        // Track arrow key releases
+        if (e.key in keysPressed) {
+            keysPressed[e.key] = false;
         }
     }
     
@@ -2270,6 +2311,7 @@ function drawCrops(x, y) {
 
         // Add listeners
         window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
         window.addEventListener('resize', () => {
             resizeCanvas();
             // Recompute zoom whenever window is resized to keep map fully visible
